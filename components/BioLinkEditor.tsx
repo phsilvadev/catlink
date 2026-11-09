@@ -7,7 +7,11 @@ import EditorCanvas from "./EditorCanvas";
 import EditorInspector from "./EditorInspector";
 import { blockDefinitions, type BlockType, type BlockValues } from "./blocks";
 
-export default function BioLinkEditor() {
+export default function BioLinkEditor({
+  allowedBlocks = [],
+}: {
+  allowedBlocks?: string[];
+}) {
   const [selectedType, setSelectedType] = useState<BlockType | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [values, setValues] = useState<Partial<Record<BlockType, BlockValues>>>(
@@ -17,6 +21,7 @@ export default function BioLinkEditor() {
     blockDefinitions.find((block) => block.type === selectedType) ?? null;
 
   function selectBlock(type: BlockType) {
+    if (!allowedBlocks.includes(type)) return;
     setSelectedType(type);
     setSidebarOpen(true);
   }
@@ -24,7 +29,11 @@ export default function BioLinkEditor() {
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <NavigationRail />
-      <BlocksSidebar selectedType={selectedType} onSelect={selectBlock} />
+      <BlocksSidebar
+        selectedType={selectedType}
+        allowedBlocks={allowedBlocks}
+        onSelect={selectBlock}
+      />
       <EditorCanvas
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen((open) => !open)}

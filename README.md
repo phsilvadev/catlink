@@ -22,7 +22,7 @@ docker compose up -d postgres
 ```
 
 Copie `.env.example` para `.env.local`, preencha `BETTER_AUTH_SECRET` com pelo menos
-32 caracteres aleatórios e confirme as URLs. Depois execute `npm run db:migrate`.
+32 caracteres aleatórios e confirme as URLs. Depois execute `npm run db:migrate` e `npm run db:seed`.
 Leia [configuração de autenticação](docs/AUTENTICACAO.md). Nunca envie segredos ao Git.
 
 ## Validação
@@ -44,11 +44,13 @@ Para produção: `npm run build` e `npm start`. Deploy ainda não configurado.
 - Cadastro, login, sessão e logout com Better Auth + PostgreSQL.
 - Editor em `/app` protegido por sessão no servidor; entrada em `/login` e `/cadastro`.
 - Migração inicial de autenticação e testes com PostgreSQL.
-- Sem persistência de páginas, upload, publicação ou cobrança.
+- API de páginas com rascunho persistido e snapshots de publicação; editor ainda em memória.
+- Catálogo de modelos/blocos e validação de permissões por plano.
+- Sem upload, página pública renderizada ou cobrança.
 - Fontes, ícones e imagens demonstrativas dependem de serviços externos.
 
 As telas de auth estão em `components/auth` e `app/(auth)`. O controlador fica em `components/BioLinkEditor.tsx`; biblioteca, inspector,
-barra superior e prévia têm componentes separados. A página inicial compõe o editor.
+barra superior e prévia têm componentes separados. A entrada redireciona ao login; o editor autenticado fica em `/app`.
 
 ## Arquitetura e sequência
 
@@ -61,3 +63,11 @@ Referências visuais: https://github.com/phsilvadev/Projetos (HTMLs das telas).
 A autenticação dos cartões 05/06 foi iniciada para dar suporte às telas aprovadas.
 Faltam modelos e operações das páginas, recuperação de senha (e-mail adiado) e
 validação do deploy no Railway. `npm run test:e2e` verifica auth com banco de teste.
+
+## Catálogo e permissões
+
+Catálogos de modelos/blocos e concessões por plano agora ficam no PostgreSQL.
+Consulte `/app/catalogo`. API de páginas com validação de plano, limite gratuito,
+isolamento e snapshots está implementada; onboarding e editor persistente ainda
+não estão conectados. Veja [gestão e contratos do catálogo](docs/CATALOGO.md).
+A seleção de itens gratuitos aguarda definição; o seed não libera itens por conta própria.

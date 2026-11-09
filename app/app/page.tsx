@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { listCatalog } from "@/lib/server/catalog";
 import BioLinkEditor from "@/components/BioLinkEditor";
 import { getAuth } from "@/lib/server/auth";
 
@@ -13,5 +14,14 @@ export default async function EditorPage() {
     redirect("/login");
   }
   if (!session) redirect("/login");
-  return <BioLinkEditor />;
+  const catalog = await listCatalog(session.user.id).catch(() => null);
+  return (
+    <BioLinkEditor
+      allowedBlocks={
+        catalog?.blocks
+          .filter((block) => block.allowed)
+          .map((block) => block.key) ?? []
+      }
+    />
+  );
 }

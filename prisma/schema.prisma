@@ -8,15 +8,17 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String       @unique
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
   sessions      Session[]
   accounts      Account[]
+  entitlement   Entitlement?
+  pages         Page[]
 }
 
 model Session {
@@ -49,8 +51,8 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@index([userId])
   @@unique([providerId, accountId])
+  @@index([userId])
 }
 
 model Verification {
@@ -58,8 +60,8 @@ model Verification {
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([identifier])
 }
@@ -69,4 +71,97 @@ model RateLimit {
   key         String @unique
   count       Int
   lastRequest BigInt
+}
+
+model Plan {
+  key          String               @id
+  name         String
+  pageLimit    Int
+  active       Boolean              @default(true)
+  entitlements Entitlement[]
+  templates    PlanTemplateAccess[]
+  blocks       PlanBlockAccess[]
+}
+
+model Entitlement {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planKey   String
+  plan      Plan     @relation(fields: [planKey], references: [key], onDelete: Restrict)
+  updatedAt DateTime @updatedAt
+}
+
+model Template {
+  key         String               @id
+  name        String
+  description String
+  thumbnail   String?
+  active      Boolean              @default(true)
+  version     Int                  @default(1)
+  config      Json
+  plans       PlanTemplateAccess[]
+  pages       Page[]
+  updatedAt   DateTime             @updatedAt
+}
+
+model BlockDefinition {
+  key           String            @id
+  name          String
+  description   String
+  active        Boolean           @default(true)
+  schemaVersion Int               @default(1)
+  plans         PlanBlockAccess[]
+  updatedAt     DateTime          @updatedAt
+}
+
+model PlanTemplateAccess {
+  planKey     String
+  templateKey String
+  plan        Plan     @relation(fields: [planKey], references: [key], onDelete: Cascade)
+  template    Template @relation(fields: [templateKey], references: [key], onDelete: Cascade)
+
+  @@id([planKey, templateKey])
+}
+
+model PlanBlockAccess {
+  planKey  String
+  blockKey String
+  plan     Plan            @relation(fields: [planKey], references: [key], onDelete: Cascade)
+  block    BlockDefinition @relation(fields: [blockKey], references: [key], onDelete: Cascade)
+
+  @@id([planKey, blockKey])
+}
+
+model Page {
+  id                 String             @id @default(uuid())
+  ownerId            String
+  owner              User               @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  slug               String             @unique
+  templateKey        String
+  template           Template           @relation(fields: [templateKey], references: [key], onDelete: Restrict)
+  templateVersion    Int
+  templateConfig     Json
+  draft              Json
+  revision           Int                @default(1)
+  publishedVersionId String?            @unique
+  publishedVersion   PublishedVersion?  @relation("PublishedPointer", fields: [publishedVersionId], references: [id], onDelete: SetNull)
+  versions           PublishedVersion[] @relation("PageHistory")
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([ownerId])
+}
+
+model PublishedVersion {
+  id             String   @id @default(uuid())
+  pageId         String
+  page           Page     @relation("PageHistory", fields: [pageId], references: [id], onDelete: Cascade)
+  sourceRevision Int
+  schemaVersion  Int
+  document       Json
+  createdAt      DateTime @default(now())
+  currentFor     Page?    @relation("PublishedPointer")
+
+  @@unique([pageId, id])
+  @@index([pageId])
 }

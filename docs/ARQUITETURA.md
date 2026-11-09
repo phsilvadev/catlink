@@ -132,3 +132,35 @@ Railway escolhido pelo dono do produto para hospedagem. Planejar serviço Next.j
 ## E-mail adiado e início da implementação
 
 O dono do produto adiou a integração de e-mail para iniciar o desenvolvimento. Não exigir credencial de envio para executar a interface e a fundação. Quando a autenticação for implementada, não apresentar recuperação/verificação por e-mail como funcionais sem transporte configurado. Revisar essa limitação antes de beta público. Cartão 04 implementa padrões e CI; o 05 implementará o banco.
+
+## Catálogos e permissões por plano — 09/11/2026
+
+Requisito aprovado: modelos e tipos de bloco devem ter acesso controlado por plano,
+com catálogo persistido no PostgreSQL. O plano gratuito terá apenas um subconjunto;
+a seleção exata de itens grátis/pagos ainda depende do dono do produto.
+
+- `Template`: chave estável, nome, descrição, miniatura, configuração versionada e
+  estado ativo/inativo.
+- `BlockDefinition`: chave do tipo, nome, descrição, versão do schema e estado
+  ativo/inativo. Separar definição do catálogo das instâncias `Block` de uma página.
+- `PlanTemplateAccess` e `PlanBlockAccess`: associações explícitas dos planos aos
+  modelos e tipos permitidos. `Entitlement` determina plano e limite de páginas.
+
+Apenas operações administrativas autorizadas poderão alterar catálogo e concessões;
+um painel de administração não está incluído automaticamente neste requisito.
+Inicialmente, dados podem ser geridos por seed/migrações versionados. Não permitir
+código executável arbitrário no catálogo: schema e renderizadores ficam no código.
+
+A interface mostra quais itens são premium; o servidor valida acesso ao aplicar
+modelo, adicionar/duplicar/trocar tipo de bloco, salvar e publicar. Não confiar no
+plano ou em permissões enviados pelo navegador. Testar tentativa de contornar
+bloqueios com requisições diretas e itens desconhecidos/inativos.
+
+Aplicar modelo cria configuração inicial versionada. Atualizar o catálogo não
+modifica páginas já criadas silenciosamente. Mudanças de plano e permissões não
+apagam conteúdo automaticamente; a política de manutenção/edição/publicação de
+conteúdo premium existente deve ser definida antes da cobrança.
+
+Implementação inicial dos catálogos e controles disponível; consulte CATALOGO.md.
+Perfil e blocos ficam em documento JSONB versionado no rascunho da página;
+PublishedVersion mantém snapshots. O fluxo visual ainda será conectado.

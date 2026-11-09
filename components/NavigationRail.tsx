@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SignOutButton from "./auth/SignOutButton";
 export default function NavigationRail() {
   return (
@@ -10,6 +11,14 @@ export default function NavigationRail() {
         </div>
       </div>
       <nav className="flex-1 flex flex-col gap-6 w-full items-center">
+        <Link
+          href="/app/catalogo"
+          aria-label="Catálogo de modelos e blocos"
+          title="Catálogo de modelos e blocos"
+          className="p-2 text-gray-400 hover:text-white"
+        >
+          <span className="material-icons-round">storefront</span>
+        </Link>
         <button className="w-10 h-10 rounded-lg bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors">
           <span className="material-icons-round text-xl">add</span>
         </button>

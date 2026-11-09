@@ -3,10 +3,15 @@ import BlockCard from "./BlockCard";
 import SocialMediaSection from "./SocialMediaSection";
 
 type Props = {
+  allowedBlocks: string[];
   selectedType: BlockType | null;
   onSelect: (type: BlockType) => void;
 };
-export default function BlocksSidebar({ selectedType, onSelect }: Props) {
+export default function BlocksSidebar({
+  selectedType,
+  allowedBlocks,
+  onSelect,
+}: Props) {
   return (
     <aside
       aria-label="Block library"
@@ -24,6 +29,7 @@ export default function BlocksSidebar({ selectedType, onSelect }: Props) {
             <BlockCard
               key={block.type}
               block={block}
+              disabled={!allowedBlocks.includes(block.type)}
               selected={selectedType === block.type}
               onClick={() => onSelect(block.type)}
             />
@@ -32,7 +38,7 @@ export default function BlocksSidebar({ selectedType, onSelect }: Props) {
         <button className="w-full py-3 bg-primary text-white rounded-xl font-medium shadow-md hover:bg-primary-dark transition-colors mb-8">
           See Another Blocks
         </button>
-        <SocialMediaSection />
+        {allowedBlocks.includes("social") && <SocialMediaSection />}
       </div>
     </aside>
   );

@@ -46,7 +46,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:validate": "prisma validate",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "db:seed": "node prisma/seed.mjs"
   },
   "engines": {
     "node": ">=24 <25"

@@ -1,0 +1,53 @@
+{
+  "plans": [
+    {
+      "key": "FREE",
+      "name": "Gratuito",
+      "pageLimit": 1,
+      "templates": [],
+      "blocks": []
+    }
+  ],
+  "templates": [
+    {
+      "key": "basic",
+      "name": "Básico",
+      "description": "Uma página simples para apresentar seu perfil e links.",
+      "version": 1,
+      "config": {
+        "schemaVersion": 1,
+        "background": "#ffffff",
+        "foreground": "#111827",
+        "accent": "#6366f1",
+        "initialBlocks": []
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "key": "text",
+      "name": "Texto",
+      "description": "Título ou texto de apresentação."
+    },
+    {
+      "key": "link",
+      "name": "Link",
+      "description": "Link para um endereço externo."
+    },
+    {
+      "key": "button",
+      "name": "Botão",
+      "description": "Botão com texto e destino."
+    },
+    {
+      "key": "image",
+      "name": "Imagem",
+      "description": "Imagem com descrição alternativa."
+    },
+    {
+      "key": "social",
+      "name": "Redes sociais",
+      "description": "Uma lista de links das suas redes sociais."
+    }
+  ]
+}
