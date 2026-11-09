@@ -9,6 +9,7 @@ const reserved = new Set([
   "recuperar-senha",
   "configuracoes",
   "catalogo",
+  "primeiro-acesso",
 ]);
 export const slugSchema = z
   .string()
@@ -18,14 +19,17 @@ export const slugSchema = z
   .max(40)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
   .refine((value) => !reserved.has(value), "Este endereço está reservado.");
-const webUrl = z
+export const webUrl = z
   .string()
   .max(2048)
   .url()
-  .refine(
-    (value) => ["http:", "https:"].includes(new URL(value).protocol),
-    "Use uma URL http ou https.",
-  );
+  .refine((value) => {
+    try {
+      return ["http:", "https:"].includes(new URL(value).protocol);
+    } catch {
+      return false;
+    }
+  }, "Use uma URL http ou https.");
 const base = { id: z.string().uuid(), visible: z.boolean().default(true) };
 export const blockSchema = z.discriminatedUnion("type", [
   z
@@ -75,7 +79,11 @@ export const draftSchema = z
   .object({
     schemaVersion: z.literal(1),
     profile: z
-      .object({ name: z.string().min(1).max(80), bio: z.string().max(500) })
+      .object({
+        name: z.string().trim().min(1).max(80),
+        bio: z.string().max(500),
+        avatarAssetId: z.string().uuid().optional(),
+      })
       .strict(),
     blocks: z
       .array(blockSchema)

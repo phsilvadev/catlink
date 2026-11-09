@@ -1,8 +1,16 @@
 import EditorToolbar from "./EditorToolbar";
-import PhonePreview from "./PhonePreview";
+import PhonePreview, { type SavedPreview } from "./PhonePreview";
 
-type Props = { sidebarOpen: boolean; onToggleSidebar: () => void };
-export default function EditorCanvas({ sidebarOpen, onToggleSidebar }: Props) {
+type Props = {
+  savedPage?: SavedPreview;
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
+};
+export default function EditorCanvas({
+  sidebarOpen,
+  savedPage,
+  onToggleSidebar,
+}: Props) {
   return (
     <main className="flex-1 flex flex-col h-screen min-w-0">
       <EditorToolbar />
@@ -16,7 +24,7 @@ export default function EditorCanvas({ sidebarOpen, onToggleSidebar }: Props) {
             <span className="material-icons-round text-sm">add</span>
           </button>
         </div>
-        <PhonePreview />
+        <PhonePreview page={savedPage} />
         <button
           type="button"
           onClick={onToggleSidebar}

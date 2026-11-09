@@ -12,6 +12,13 @@ export default function NavigationRail() {
       </div>
       <nav className="flex-1 flex flex-col gap-6 w-full items-center">
         <Link
+          href="/app"
+          aria-label="Minhas páginas"
+          className="p-2 text-gray-400 hover:text-white"
+        >
+          <span className="material-icons-round">home</span>
+        </Link>
+        <Link
           href="/app/catalogo"
           aria-label="Catálogo de modelos e blocos"
           title="Catálogo de modelos e blocos"

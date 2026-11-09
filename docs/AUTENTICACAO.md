@@ -11,7 +11,8 @@ escuro, marca Catlink e conteúdo em português. No celular, a apresentação la
 - `/login`: e-mail e senha, mostrar/ocultar senha e lembrar sessão.
 - `/cadastro`: e-mail e senha; nome inicial interno derivado do e-mail, até o usuário
   configurar seu perfil. Isso não reserva slug nem cria página pública.
-- `/app`: editor existente, protegido no servidor por sessão válida.
+- `/app`: painel protegido; conta sem páginas segue para `/app/primeiro-acesso`.
+- `/app/editor/:id`: editor da página, protegido por sessão e propriedade.
 - `/api/auth/[...all]`: Better Auth, limitado a cadastro, login, logout e sessão.
 
 O Better Auth gera hash da senha, cria usuários/contas/sessões no PostgreSQL via

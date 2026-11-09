@@ -1,4 +1,5 @@
 import "server-only";
+import { requireAvatar } from "./assets";
 import { getDb } from "./db";
 import { Prisma } from "@/generated/prisma/client";
 import {
@@ -99,6 +100,7 @@ export async function savePage(userId: string, id: string, input: unknown) {
       plan.key,
       data.draft.blocks.map((block) => block.type),
     );
+    await requireAvatar(tx, userId, data.draft.profile.avatarAssetId);
     const changedTemplate = template.key !== page.templateKey;
     return tx.page.update({
       where: { id },
@@ -130,6 +132,7 @@ export async function publishPage(userId: string, id: string, input: unknown) {
     const plan = await accountPlan(tx, userId);
     await allowedTemplate(tx, plan.key, page.templateKey);
     const draft = draftSchema.parse(page.draft);
+    await requireAvatar(tx, userId, draft.profile.avatarAssetId);
     await allowedBlocks(
       tx,
       plan.key,

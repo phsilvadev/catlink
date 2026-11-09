@@ -40,9 +40,10 @@ Para produção: `npm run build` e `npm start`. Deploy ainda não configurado.
 
 - Biblioteca de blocos e painel direito com seleção, expansão e campos por tipo.
 - Valores dos campos mantidos em memória durante a sessão.
-- Prévia demonstrativa separada em componente, ainda sem refletir os campos.
+- Prévia carrega o perfil e links salvos; controles gerais de edição continuam em desenvolvimento.
 - Cadastro, login, sessão e logout com Better Auth + PostgreSQL.
-- Editor em `/app` protegido por sessão no servidor; entrada em `/login` e `/cadastro`.
+- Painel em `/app`, primeiro acesso em `/app/primeiro-acesso` e editor por página em `/app/editor/:id`, protegidos por sessão.
+- Primeiro acesso salva progresso, perfil, links e cria rascunho sem publicação automática.
 - Migração inicial de autenticação e testes com PostgreSQL.
 - API de páginas com rascunho persistido e snapshots de publicação; editor ainda em memória.
 - Catálogo de modelos/blocos e validação de permissões por plano.
@@ -50,7 +51,7 @@ Para produção: `npm run build` e `npm start`. Deploy ainda não configurado.
 - Fontes, ícones e imagens demonstrativas dependem de serviços externos.
 
 As telas de auth estão em `components/auth` e `app/(auth)`. O controlador fica em `components/BioLinkEditor.tsx`; biblioteca, inspector,
-barra superior e prévia têm componentes separados. A entrada redireciona ao login; o editor autenticado fica em `/app`.
+barra superior e prévia têm componentes separados. A entrada redireciona ao login; o painel autenticado fica em `/app`.
 
 ## Arquitetura e sequência
 
@@ -68,6 +69,7 @@ validação do deploy no Railway. `npm run test:e2e` verifica auth com banco de 
 
 Catálogos de modelos/blocos e concessões por plano agora ficam no PostgreSQL.
 Consulte `/app/catalogo`. API de páginas com validação de plano, limite gratuito,
-isolamento e snapshots está implementada; onboarding e editor persistente ainda
-não estão conectados. Veja [gestão e contratos do catálogo](docs/CATALOGO.md).
-A seleção de itens gratuitos aguarda definição; o seed não libera itens por conta própria.
+isolamento e snapshots está implementada. O primeiro acesso já cria o rascunho e
+abre sua prévia no editor; os controles gerais de edição ainda estão em desenvolvimento. Veja [gestão e contratos do catálogo](docs/CATALOGO.md).
+Seleção gratuita aprovada: modelo Básico e blocos texto, link, botão, imagem e redes sociais.
+Leia [primeiro acesso e foto](docs/PRIMEIRO_ACESSO.md) para fluxo, armazenamento e limites.

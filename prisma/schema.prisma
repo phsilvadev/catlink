@@ -19,6 +19,8 @@ model User {
   accounts      Account[]
   entitlement   Entitlement?
   pages         Page[]
+  onboarding    Onboarding?
+  assets        Asset[]
 }
 
 model Session {
@@ -149,6 +151,8 @@ model Page {
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
 
+  onboarding Onboarding?
+
   @@index([ownerId])
 }
 
@@ -164,4 +168,26 @@ model PublishedVersion {
 
   @@unique([pageId, id])
   @@index([pageId])
+}
+
+model Onboarding {
+  userId          String   @id
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  revision        Int      @default(0)
+  state           Json
+  completedPageId String?  @unique
+  completedPage   Page?    @relation(fields: [completedPageId], references: [id], onDelete: SetNull)
+  updatedAt       DateTime @updatedAt
+}
+
+model Asset {
+  id         String   @id @default(uuid())
+  ownerId    String
+  owner      User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  storageKey String   @unique
+  mimeType   String
+  bytes      Int
+  createdAt  DateTime @default(now())
+
+  @@index([ownerId])
 }

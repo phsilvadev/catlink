@@ -28,8 +28,7 @@ npm run db:seed
 ```
 
 O seed usa `prisma/catalog.json`, instala o plano FREE, modelo Básico e cinco tipos
-conhecidos: texto, link, botão, imagem e redes sociais. Ainda não concede esses
-itens a FREE: a seleção comercial está aguardando definição do dono do produto.
+conhecidos: texto, link, botão, imagem e redes sociais. A seleção aprovada libera o modelo Básico e esses cinco tipos a FREE.
 Os arrays `plans[].templates` e `plans[].blocks` são as chaves a liberar. Não existe
 plano pago padrão com quantidade/preço inventados. Planos de teste só existem no
 banco descartável usado pela suíte automatizada.
@@ -87,8 +86,7 @@ sem dados da conta. O banco restringe o ponteiro publicado à própria página.
 
 A API salva e publica snapshots, mas ainda não existe rota pública /usuario nem
 renderizador público conectado. O editor atual continua demonstrativo/em memória;
-sua seleção não cria nem salva instâncias. O fluxo visual de onboarding ainda
-precisa consumir estas operações. Upload de assets, temas adicionais, painel de
+sua seleção não cria nem salva instâncias. O fluxo de primeiro acesso já consome estas operações; consulte PRIMEIRO_ACESSO.md. Upload de assets, temas adicionais, painel de
 páginas, cobrança, métricas e operação no Railway não são implementados aqui.
 
 Não substituir o catálogo por listas confiadas ao navegador ao construir as telas

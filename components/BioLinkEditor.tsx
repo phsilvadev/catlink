@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+import type { SavedPreview } from "./PhonePreview";
 
 import { useState } from "react";
 import NavigationRail from "./NavigationRail";
@@ -9,8 +11,10 @@ import { blockDefinitions, type BlockType, type BlockValues } from "./blocks";
 
 export default function BioLinkEditor({
   allowedBlocks = [],
+  savedPage,
 }: {
   allowedBlocks?: string[];
+  savedPage?: SavedPreview;
 }) {
   const [selectedType, setSelectedType] = useState<BlockType | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -29,12 +33,21 @@ export default function BioLinkEditor({
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <NavigationRail />
+      {savedPage && (
+        <Link
+          href="/app"
+          className="fixed bottom-4 left-20 z-50 rounded-full bg-white px-4 py-2 text-xs font-semibold text-primary shadow-md"
+        >
+          Minhas páginas · /{savedPage.slug} · Rascunho salvo
+        </Link>
+      )}
       <BlocksSidebar
         selectedType={selectedType}
         allowedBlocks={allowedBlocks}
         onSelect={selectBlock}
       />
       <EditorCanvas
+        savedPage={savedPage}
         sidebarOpen={sidebarOpen}
         onToggleSidebar={() => setSidebarOpen((open) => !open)}
       />

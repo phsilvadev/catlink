@@ -27,7 +27,7 @@ test("cadastro, sessão persistente, logout e login com PostgreSQL real", async 
   await page.getByLabel("E-mail", { exact: true }).fill(email);
   await page.getByLabel("Senha", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Criar conta", exact: true }).click();
-  await expect(page).toHaveURL(/\/app$/);
+  await expect(page).toHaveURL(/\/app\/primeiro-acesso$/);
   await page.reload();
   await expect(
     page.getByRole("button", { name: "Sair da conta" }),
@@ -60,7 +60,7 @@ test("cadastro, sessão persistente, logout e login com PostgreSQL real", async 
   await page.getByLabel("Senha", { exact: true }).fill(password);
   await page.getByLabel("Lembrar de mim").uncheck();
   await page.getByRole("button", { name: "Entrar", exact: true }).click();
-  await expect(page).toHaveURL(/\/app$/);
+  await expect(page).toHaveURL(/\/app\/primeiro-acesso$/);
   const sessionCookie = (await page.context().cookies()).find((cookie) =>
     cookie.name.includes("session_token"),
   );

@@ -1,4 +1,18 @@
-export default function PhonePreview() {
+import PageContent from "./page/PageContent";
+import type { Draft } from "@/lib/schemas/page";
+export type SavedPreview = {
+  id: string;
+  slug: string;
+  draft: Draft;
+  theme: { background: string; foreground: string; accent: string };
+};
+export default function PhonePreview({ page }: { page?: SavedPreview }) {
+  if (page)
+    return (
+      <div className="relative h-[680px] w-[340px] overflow-y-auto rounded-[40px] border-[8px] border-black bg-white shadow-phone">
+        <PageContent draft={page.draft} theme={page.theme} preview />
+      </div>
+    );
   return (
     <div className="relative w-[340px] h-[680px] bg-black rounded-[40px] shadow-phone border-[8px] border-black overflow-hidden z-0">
       <div className="absolute top-0 w-full h-8 z-20 flex justify-between items-center px-6 pt-2 text-white text-xs font-semibold">

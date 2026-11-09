@@ -4,8 +4,8 @@
       "key": "FREE",
       "name": "Gratuito",
       "pageLimit": 1,
-      "templates": [],
-      "blocks": []
+      "templates": ["basic"],
+      "blocks": ["text", "link", "button", "image", "social"]
     }
   ],
   "templates": [

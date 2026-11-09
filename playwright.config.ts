@@ -19,5 +19,12 @@ export default defineConfig({
     url: process.env.BETTER_AUTH_URL || "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 60000,
+    env: {
+      S3_ENDPOINT: "http://127.0.0.1:39010",
+      S3_REGION: "us-east-1",
+      S3_BUCKET: "catlink-test",
+      S3_ACCESS_KEY_ID: "test-only",
+      S3_SECRET_ACCESS_KEY: "test-only",
+    },
   },
 });
