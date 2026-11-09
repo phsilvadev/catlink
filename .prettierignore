@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+package-lock.json
+next-env.d.ts
+AGENTS.md
+*.tsbuildinfo
+
+generated
+prisma/migrations
+playwright-report
+test-results
