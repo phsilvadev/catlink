@@ -9,6 +9,8 @@ export default defineConfig([
   prettier,
   globalIgnores([
     "generated/**",
+    ".local/**",
+    "docs/referencias/entrada-prototipo/**",
     ".next/**",
     "out/**",
     "build/**",

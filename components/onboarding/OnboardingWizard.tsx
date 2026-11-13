@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -40,6 +40,37 @@ export default function OnboardingWizard({
   templates: Template[];
 }) {
   const router = useRouter();
+  const panel = useRef<HTMLElement>(null);
+  const main = useRef<HTMLElement>(null);
+  const [transitioning, setTransitioning] = useState(false);
+  const motion = useRef<{ rect: DOMRect; backwards: boolean } | null>(null);
+  async function goToStep(next: number) {
+    if (transitioning || next === step) return;
+    setTransitioning(true);
+    const phone = document.querySelector(".entry-flow .showcase-phone");
+    if (phone)
+      motion.current = {
+        rect: phone.getBoundingClientRect(),
+        backwards: next < step,
+      };
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      await panel.current
+        ?.animate(
+          [
+            { opacity: 1 },
+            {
+              opacity: 0,
+              transform: next < step ? "translateY(8px)" : "translateY(-8px)",
+            },
+          ],
+          { duration: 160, easing: "ease-out" },
+        )
+        .finished.catch(() => {});
+    }
+    setStep(next);
+    setError("");
+    setCode("");
+  }
   const [saved, setSaved] = useState(initial),
     [state, setState] = useState({
       ...initial.state,
@@ -56,6 +87,57 @@ export default function OnboardingWizard({
     track = useRef<HTMLDivElement>(null);
   const [bounds, setBounds] = useState({ start: true, end: false });
   const conflict = code === "CONFLICT";
+  useLayoutEffect(() => {
+    const previous = motion.current;
+    if (!previous) return;
+    motion.current = null;
+    main.current?.scrollTo({ top: 0 });
+    const phone = document.querySelector(".entry-flow .showcase-phone");
+    const content = document.querySelector(".entry-flow .showcase-content");
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const animations: Animation[] = [];
+    if (!reduced) {
+      const entering = panel.current?.animate(
+        [
+          {
+            opacity: 0,
+            transform: previous.backwards
+              ? "translateY(-12px)"
+              : "translateY(12px)",
+          },
+          { opacity: 1, transform: "translateY(0)" },
+        ],
+        { duration: 350, easing: "ease-out" },
+      );
+      if (entering) animations.push(entering);
+      if (phone && content) {
+        const current = phone.getBoundingClientRect();
+        animations.push(
+          content.animate(
+            [
+              {
+                transform: `translate(${previous.rect.left - current.left}px, ${previous.rect.top - current.top}px)`,
+              },
+              { transform: "translate(0, 0)" },
+            ],
+            { duration: 900, easing: "cubic-bezier(.45, 0, .55, 1)" },
+          ),
+        );
+      }
+    }
+    let cancelled = false;
+    Promise.all(
+      animations.map((animation) => animation.finished.catch(() => {})),
+    ).then(() => {
+      if (!cancelled) setTransitioning(false);
+    });
+    return () => {
+      cancelled = true;
+      animations.forEach((animation) => animation.cancel());
+    };
+  }, [step]);
   useEffect(() => {
     heading.current?.focus();
   }, [step]);
@@ -86,7 +168,7 @@ export default function OnboardingWizard({
     setCode("");
   }
   async function submit() {
-    if (busy || conflict) return;
+    if (busy || conflict || transitioning) return;
     if (step === 2 && !state.kind) {
       setError("Escolha seu tipo de perfil.");
       return;
@@ -122,17 +204,21 @@ export default function OnboardingWizard({
         return;
       }
       setSaved(result.data);
-      setState({
+      setState((previous) => ({
         ...result.data.state,
+        // Returning to an earlier step must not erase later choices still in memory.
+        ...(step < 2 ? { kind: previous.kind } : {}),
+        ...(step < 3 ? { platforms: previous.platforms } : {}),
         templateKey:
+          (step < 4 ? previous.templateKey : result.data.state.templateKey) ||
           result.data.state.templateKey ||
           templates.find((t) => t.allowed)?.key ||
           "",
-      });
+      }));
       if (result.data.completedPageId) {
         router.replace(`/app/editor/${result.data.completedPageId}`);
         router.refresh();
-      } else setStep(Math.min(step + 1, 4));
+      } else await goToStep(Math.min(step + 1, 4));
     } catch {
       setError(
         "Não foi possível conectar. Seus dados já salvos serão mantidos.",
@@ -161,10 +247,15 @@ export default function OnboardingWizard({
     <div
       className={`entry-flow onboarding ${step === 4 ? "showcase-expanded model-step" : ""}`}
     >
-      <EntryShowcase expanded={step === 4} selectedTheme={state.templateKey} />
-      <main className="onboarding-main">
+      <EntryShowcase
+        expanded={step === 4}
+        selectedTheme={state.templateKey}
+        step={step}
+      />
+      <main ref={main} className="onboarding-main">
         <section
-          className="onboarding-panel"
+          ref={panel}
+          className={`onboarding-panel ${transitioning ? "is-leaving" : ""}`}
           data-step={step}
           aria-label={`Etapa ${step} de 4`}
           style={step === 1 ? { maxWidth: 420 } : undefined}
@@ -207,7 +298,7 @@ export default function OnboardingWizard({
               <UsernameField
                 value={state.slug}
                 onChange={(slug) => change({ slug })}
-                busy={busy || conflict}
+                busy={busy || conflict || transitioning}
                 taken={code === "SLUG_TAKEN"}
                 onContinue={submit}
               />
@@ -229,7 +320,7 @@ export default function OnboardingWizard({
               }}
               aria-busy={busy}
             >
-              <fieldset disabled={busy || conflict}>
+              <fieldset disabled={busy || conflict || transitioning}>
                 <legend>
                   {step === 2
                     ? "Escolha o seu tipo de perfil"
@@ -300,17 +391,46 @@ export default function OnboardingWizard({
                       type="button"
                       className="model-carousel-arrow previous"
                       aria-label="Mostrar modelo anterior"
-                      disabled={bounds.start}
+                      hidden={bounds.start}
                       onClick={() =>
                         track.current?.scrollBy({
-                          left: -(track.current?.clientWidth || 220),
-                          behavior: "smooth",
+                          left: -(
+                            (track.current
+                              ?.querySelector(".theme-option")
+                              ?.getBoundingClientRect().width || 208) + 12
+                          ),
+                          behavior: window.matchMedia(
+                            "(prefers-reduced-motion: reduce)",
+                          ).matches
+                            ? "instant"
+                            : "smooth",
                         })
                       }
                     >
                       <ChevronLeft size={18} />
                     </button>
-                    <div className="model-carousel-viewport">
+                    <div
+                      className="model-carousel-viewport"
+                      onFocusCapture={(event) => {
+                        const card = (event.target as HTMLElement).closest(
+                          ".theme-option",
+                        );
+                        if (!card || !track.current) return;
+                        const box = track.current.getBoundingClientRect();
+                        const rect = card.getBoundingClientRect();
+                        const delta =
+                          rect.right > box.right
+                            ? rect.right - box.right + 4
+                            : rect.left < box.left
+                              ? rect.left - box.left - 4
+                              : 0;
+                        if (delta)
+                          track.current.scrollBy({
+                            left: delta,
+                            behavior: "smooth",
+                          });
+                      }}
+                    >
                       <div className="showcase-themes" ref={track}>
                         {templates.map((t) => (
                           <label
@@ -356,11 +476,18 @@ export default function OnboardingWizard({
                       type="button"
                       className="model-carousel-arrow next"
                       aria-label="Mostrar próximo modelo"
-                      disabled={bounds.end}
+                      hidden={bounds.end}
                       onClick={() =>
                         track.current?.scrollBy({
-                          left: track.current?.clientWidth || 220,
-                          behavior: "smooth",
+                          left:
+                            (track.current
+                              ?.querySelector(".theme-option")
+                              ?.getBoundingClientRect().width || 208) + 12,
+                          behavior: window.matchMedia(
+                            "(prefers-reduced-motion: reduce)",
+                          ).matches
+                            ? "instant"
+                            : "smooth",
                         })
                       }
                     >
@@ -384,9 +511,9 @@ export default function OnboardingWizard({
                 <button
                   type="button"
                   className="back"
-                  disabled={busy || conflict}
+                  disabled={busy || conflict || transitioning}
                   onClick={() => {
-                    setStep(step - 1);
+                    void goToStep(step - 1);
                     setError("");
                     setCode("");
                   }}
@@ -400,6 +527,7 @@ export default function OnboardingWizard({
                   disabled={
                     busy ||
                     conflict ||
+                    transitioning ||
                     (step === 4 &&
                       !templates.some(
                         (t) => t.key === state.templateKey && t.allowed,

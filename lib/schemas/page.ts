@@ -97,6 +97,7 @@ export const draftSchema = z
 export const templateConfigSchema = z
   .object({
     schemaVersion: z.literal(1),
+    appearance: z.enum(["aurora", "sunset", "mint", "pixel"]).optional(),
     background: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     foreground: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     accent: z.string().regex(/^#[0-9a-fA-F]{6}$/),

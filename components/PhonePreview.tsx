@@ -4,7 +4,12 @@ export type SavedPreview = {
   id: string;
   slug: string;
   draft: Draft;
-  theme: { background: string; foreground: string; accent: string };
+  theme: {
+    background: string;
+    foreground: string;
+    accent: string;
+    appearance?: "aurora" | "sunset" | "mint" | "pixel";
+  };
 };
 export default function PhonePreview({ page }: { page?: SavedPreview }) {
   if (page)

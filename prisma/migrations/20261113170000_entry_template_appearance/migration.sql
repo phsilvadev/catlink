@@ -1,0 +1,5 @@
+-- Preserve existing page snapshots; apply the approved appearance only to catalog version 1.
+UPDATE "Template" SET version=2, config='{"schemaVersion": 1, "background": "#ffffff", "foreground": "#111827", "accent": "#111827", "initialBlocks": [], "appearance": "aurora"}'::jsonb, "updatedAt"=NOW() WHERE key='basic' AND version=1;
+UPDATE "Template" SET version=2, config='{"schemaVersion": 1, "background": "#fff8fb", "foreground": "#662944", "accent": "#d66b9f", "initialBlocks": [], "appearance": "sunset"}'::jsonb, "updatedAt"=NOW() WHERE key='sunset' AND version=1;
+UPDATE "Template" SET version=2, config='{"schemaVersion": 1, "background": "#f5fbf8", "foreground": "#204e49", "accent": "#438f89", "initialBlocks": [], "appearance": "mint"}'::jsonb, "updatedAt"=NOW() WHERE key='mint' AND version=1;
+UPDATE "Template" SET version=2, config='{"schemaVersion": 1, "background": "#ffffff", "foreground": "#111827", "accent": "#6366f1", "initialBlocks": [], "appearance": "pixel"}'::jsonb, "updatedAt"=NOW() WHERE key='pixel' AND version=1;

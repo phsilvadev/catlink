@@ -4,16 +4,49 @@ import type { Draft } from "@/lib/schemas/page";
 
 type Props = {
   draft: Draft;
-  theme: { background: string; foreground: string; accent: string };
+  theme: {
+    background: string;
+    foreground: string;
+    accent: string;
+    appearance?: "aurora" | "sunset" | "mint" | "pixel";
+  };
   preview?: boolean;
 };
 export default function PageContent({ draft, theme, preview = false }: Props) {
   const linkClass = preview ? "pointer-events-none" : "";
+  const appearance = theme.appearance;
+  const cover =
+    appearance === "aurora"
+      ? "linear-gradient(140deg,#02c7c7,#07052a 38%,#9200fa)"
+      : appearance === "sunset"
+        ? "linear-gradient(130deg,#ffecc4,#e5a3c9,#dc64ab)"
+        : appearance === "mint"
+          ? "linear-gradient(130deg,#d6dfbf,#55b8bf)"
+          : null;
+  const radius =
+    appearance === "pixel"
+      ? "0px"
+      : appearance === "mint"
+        ? "8px"
+        : appearance === "sunset"
+          ? "14px"
+          : "999px";
   return (
     <div
-      className="min-h-full px-5 pb-10 pt-10 text-center"
-      style={{ background: theme.background, color: theme.foreground }}
+      className="relative min-h-full px-5 pb-10 pt-10 text-center"
+      style={{
+        background: theme.background,
+        color: theme.foreground,
+        paddingTop: cover ? 96 : 80,
+      }}
     >
+      {cover && (
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-36"
+          style={{ background: cover, clipPath: "ellipse(90% 100% at 50% 0)" }}
+        />
+      )}
       <div className="relative mx-auto mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gray-100 text-gray-400">
         {draft.profile.avatarAssetId ? (
           <Image
@@ -88,8 +121,15 @@ export default function PageContent({ draft, theme, preview = false }: Props) {
                 className={`block break-words rounded-xl px-4 py-3 text-sm font-semibold ${linkClass}`}
                 style={
                   block.type === "button"
-                    ? { background: theme.accent, color: "#ffffff" }
-                    : { border: `1px solid ${theme.foreground}30` }
+                    ? {
+                        background: theme.accent,
+                        color: "#ffffff",
+                        borderRadius: radius,
+                      }
+                    : {
+                        border: `1px solid ${theme.foreground}30`,
+                        borderRadius: radius,
+                      }
                 }
               >
                 {block.label}

@@ -10,6 +10,11 @@ Cadastro com e-mail/senha → link → tipo de perfil → até cinco plataformas
 (opcional) → modelo → editor do rascunho. Login e cadastro compartilham a
 ilustração interativa do HTML; cadastro mantém apenas seu formulário de conta.
 A prévia permite experimentar blocos e temas e se expande na seleção de modelo.
+A expansão possui animação reversa ao voltar; os textos acompanham a etapa atual.
+Temas usam skeleton com cancelamento de trocas antigas. As miniaturas alternam
+automaticamente até uma interação manual; movimentos reduzidos desativam essa
+reprodução. O carrossel mostra três modelos por vez, com setas, rolagem por toque
+e suporte a foco pelo teclado. PixelMaster mantém o visual branco aprovado.
 Esses exemplos não acrescentam blocos ou autorizam modelos na página real.
 
 Após 450 ms sem digitação, a API autenticada verifica o username no PostgreSQL.
@@ -67,3 +72,7 @@ para upload, autorização, URLs, planos e revogação de concessões.
 Trabalhar e enviar alterações somente em `development`. Ela contém o histórico
 completo das branches anteriores, sem squash nem perda de commits. Não criar
 branches por tarefa. Branches antigas são referências históricas, sem trabalho novo.
+
+A integração local e os arquivos CSS/JS de referência estão descritos em
+[desenvolvimento local](DESENVOLVIMENTO_LOCAL.md) e
+[referência completa](referencias/entrada-prototipo/README.md).

@@ -38,7 +38,12 @@ export default async function FirstAccess() {
         revision: saved.revision,
         completedPageId: saved.completedPageId,
       }}
-      templates={catalog.templates}
+      templates={[...catalog.templates].sort((a, b) => {
+        const order = ["basic", "sunset", "mint", "pixel"];
+        const rank = (key: string) =>
+          order.includes(key) ? order.indexOf(key) : order.length;
+        return rank(a.key) - rank(b.key) || a.name.localeCompare(b.name);
+      })}
     />
   );
 }

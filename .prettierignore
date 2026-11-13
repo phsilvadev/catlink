@@ -10,3 +10,6 @@ generated
 prisma/migrations
 playwright-report
 test-results
+
+.local
+docs/referencias/entrada-prototipo

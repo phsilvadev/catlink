@@ -13,52 +13,56 @@
       "key": "basic",
       "name": "Básico",
       "description": "Uma página simples para apresentar seu perfil e links.",
-      "version": 1,
+      "version": 2,
       "config": {
         "schemaVersion": 1,
         "background": "#ffffff",
         "foreground": "#111827",
-        "accent": "#6366f1",
-        "initialBlocks": []
+        "accent": "#111827",
+        "initialBlocks": [],
+        "appearance": "aurora"
       }
     },
     {
       "key": "sunset",
       "name": "Rosa",
       "description": "Modelo Rosa para personalizar sua página.",
-      "version": 1,
+      "version": 2,
       "config": {
         "schemaVersion": 1,
-        "background": "#fff1f2",
-        "foreground": "#831843",
-        "accent": "#db2777",
-        "initialBlocks": []
+        "background": "#fff8fb",
+        "foreground": "#662944",
+        "accent": "#d66b9f",
+        "initialBlocks": [],
+        "appearance": "sunset"
       }
     },
     {
       "key": "mint",
       "name": "Menta",
       "description": "Modelo Menta para personalizar sua página.",
-      "version": 1,
+      "version": 2,
       "config": {
         "schemaVersion": 1,
-        "background": "#f0fdfa",
-        "foreground": "#134e4a",
-        "accent": "#0d9488",
-        "initialBlocks": []
+        "background": "#f5fbf8",
+        "foreground": "#204e49",
+        "accent": "#438f89",
+        "initialBlocks": [],
+        "appearance": "mint"
       }
     },
     {
       "key": "pixel",
       "name": "PixelMaster",
       "description": "Modelo PixelMaster para personalizar sua página.",
-      "version": 1,
+      "version": 2,
       "config": {
         "schemaVersion": 1,
-        "background": "#17152b",
-        "foreground": "#f5f3ff",
-        "accent": "#8b5cf6",
-        "initialBlocks": []
+        "background": "#ffffff",
+        "foreground": "#111827",
+        "accent": "#6366f1",
+        "initialBlocks": [],
+        "appearance": "pixel"
       }
     }
   ],
