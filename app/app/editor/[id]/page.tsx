@@ -27,6 +27,7 @@ export default async function PageEditor({
       savedPage={{
         id: page.id,
         slug: page.slug,
+        revision: page.revision,
         draft: draftSchema.parse(page.draft),
         theme: templateConfigSchema.parse(page.templateConfig),
       }}

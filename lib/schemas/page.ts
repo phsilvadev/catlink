@@ -37,6 +37,26 @@ export const blockSchema = z.discriminatedUnion("type", [
       ...base,
       type: z.literal("text"),
       content: z.string().min(1).max(5000),
+      style: z
+        .object({
+          bold: z.boolean().optional(),
+          italic: z.boolean().optional(),
+          underline: z.boolean().optional(),
+          align: z.enum(["left", "center", "right"]).optional(),
+          fontSize: z.number().int().min(10).max(48).optional(),
+          color: z
+            .string()
+            .regex(/^#[0-9a-fA-F]{6}$/)
+            .optional(),
+          background: z
+            .string()
+            .regex(/^#[0-9a-fA-F]{6}$/)
+            .optional(),
+          paddingTop: z.number().int().min(0).max(96).optional(),
+          paddingBottom: z.number().int().min(0).max(96).optional(),
+        })
+        .strict()
+        .optional(),
     })
     .strict(),
   z

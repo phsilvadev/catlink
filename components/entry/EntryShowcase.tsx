@@ -1,18 +1,16 @@
 "use client";
 
-import Image from "next/image";
+import PageContent from "@/components/page/PageContent";
+import PhoneFrame from "@/components/page/PhoneFrame";
+import { demoProfile, entryTheme } from "@/lib/page-appearance";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
-  BatteryFull,
   CalendarDays,
   Check,
   Globe,
   Image as ImageIcon,
   Link as LinkIcon,
-  Mail,
-  Signal,
   Type,
-  Wifi,
 } from "lucide-react";
 
 const themes = ["basic", "sunset", "mint"] as const;
@@ -242,146 +240,33 @@ export default function EntryShowcase({
             aria-busy={loading}
             aria-label={`Prévia do tema ${names[theme] || names.basic}`}
           >
-            <div className="relative w-[300px] h-[600px] bg-black rounded-[40px] shadow-phone border-[8px] border-black overflow-hidden z-0">
-              <div className="phone-status absolute top-0 w-full h-8 z-20 flex justify-between items-center px-6 pt-2 text-white text-xs font-semibold">
-                <span>9:41</span>
-                <div className="flex gap-1.5 items-center">
-                  <Signal size={10} />
-                  <Wifi size={10} />
-                  <BatteryFull size={10} />
-                </div>
+            <PhoneFrame lightStatus={theme === "pixel"}>
+              <div className="phone-skeleton" aria-hidden="true">
+                <span className="skeleton-avatar" />
+                <span className="skeleton-title" />
+                <span className="skeleton-description" />
+                <span className="skeleton-link" />
+                <span className="skeleton-link" />
+                <span className="skeleton-link" />
               </div>
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-5 bg-black rounded-full z-20" />
               <div
                 ref={screen}
-                className="phone-screen w-full h-full bg-white relative overflow-hidden"
+                className={
+                  theme === "pixel" ? "pixel-template" : "standard-template"
+                }
               >
-                <div className="phone-skeleton" aria-hidden="true">
-                  <span className="skeleton-avatar" />
-                  <span className="skeleton-title" />
-                  <span className="skeleton-description" />
-                  <span className="skeleton-link" />
-                  <span className="skeleton-link" />
-                  <span className="skeleton-link" />
-                </div>
-                <div className="standard-template">
-                  <div className="relative h-36 w-full overflow-hidden bg-white">
-                    <div className="phone-cover absolute inset-0 bg-gradient-to-tr from-cyan-900 via-indigo-900 to-purple-800" />
-                    <div className="absolute bottom-[-1px] left-0 w-full leading-[0]">
-                      <svg
-                        className="relative block w-[calc(140%+1.3px)] h-[30px] fill-white"
-                        preserveAspectRatio="none"
-                        viewBox="0 0 1200 120"
-                        aria-hidden="true"
-                      >
-                        <path d="M600,112.77C268.63,112.77,0,65.52,0,7.23V120H1200V7.23C1200,65.52,931.37,112.77,600,112.77Z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="relative -mt-12 flex justify-center z-10">
-                    <div className="w-20 h-20 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-200">
-                      <Image
-                        src="/images/auth-avatar.png"
-                        alt="Perfil de exemplo"
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
-                  <div className="text-center px-4 mt-2 mb-4">
-                    <h1 className="text-lg font-bold text-gray-900">
-                      Rock Agency
-                    </h1>
-                    <p className="text-[10px] text-gray-500 mt-1">
-                      Digital agency specializing in SaaS products.
-                    </p>
-                  </div>
-                  {activeBlock && theme !== "pixel" ? (
+                <PageContent
+                  draft={demoProfile(theme)}
+                  theme={entryTheme(theme)}
+                  preview
+                  demo
+                >
+                  {activeBlock ? (
                     <DemoBlock block={activeBlock} key={activeBlock} />
-                  ) : (
-                    <>
-                      <div className="phone-links px-4 space-y-3">
-                        <div className="bg-gray-900 text-white py-2.5 rounded-full text-xs font-bold text-center shadow-md flex items-center justify-center gap-2">
-                          <Globe size={12} />
-                          Visit Website
-                        </div>
-                        <div className="bg-white border border-gray-200 text-gray-800 py-2.5 rounded-full text-xs font-bold text-center shadow-sm">
-                          Latest Projects
-                        </div>
-                        <div className="bg-white border border-gray-200 text-gray-800 py-2.5 rounded-full text-xs font-bold text-center shadow-sm">
-                          Book a Call
-                        </div>
-                      </div>
-                      <div className="phone-socials flex justify-center gap-3 mt-6">
-                        {["instagram", "twitter", "linkedin-in"].map((icon) => (
-                          <div
-                            className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"
-                            key={icon}
-                          >
-                            <i
-                              className={`fab fa-${icon} text-xs`}
-                              aria-hidden="true"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="pixel-template">
-                  <Image
-                    src="/images/auth-avatar.png"
-                    alt="Avatar de PixelMaster"
-                    width={96}
-                    height={96}
-                    className="pixel-avatar"
-                  />
-                  <h1>
-                    PixelMaster{" "}
-                    <span
-                      className="material-icons-round"
-                      aria-label="Verificado"
-                    >
-                      verified
-                    </span>
-                  </h1>
-                  <p>Design | Code | Minimalist</p>
-                  {activeBlock && theme === "pixel" ? (
-                    <DemoBlock block={activeBlock} key={activeBlock} />
-                  ) : (
-                    <>
-                      <div className="pixel-links">
-                        <div>
-                          <i
-                            className="fab fa-youtube text-red-500"
-                            aria-hidden="true"
-                          />
-                          Latest Video
-                        </div>
-                        <div>
-                          <Globe size={16} color="#6366f1" />
-                          My Portfolio
-                        </div>
-                        <div>
-                          <i
-                            className="fab fa-twitter text-blue-400"
-                            aria-hidden="true"
-                          />
-                          Twitter Threads
-                        </div>
-                      </div>
-                      <div className="pixel-socials">
-                        <i className="fab fa-instagram" aria-hidden="true" />
-                        <i className="fab fa-tiktok" aria-hidden="true" />
-                        <Mail size={20} />
-                      </div>
-                    </>
-                  )}
-                  <span className="pixel-brand">CATLINK</span>
-                </div>
+                  ) : undefined}
+                </PageContent>
               </div>
-            </div>
+            </PhoneFrame>
           </div>
           <div
             className="showcase-cards"

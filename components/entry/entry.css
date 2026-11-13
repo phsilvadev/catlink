@@ -1778,3 +1778,17 @@
 .entry-flow .model-carousel-arrow {
   z-index: 3;
 }
+/* The entry screens and editor share the same profile and phone renderer. */
+.entry-flow .pixel-template {
+  padding: 0;
+  align-items: stretch;
+}
+.entry-flow .profile-page .profile-cover svg {
+  fill: inherit;
+}
+.entry-flow .profile-page .profile-cover {
+  flex-shrink: 0;
+}
+.entry-flow .profile-page .profile-text {
+  font-size: inherit;
+}

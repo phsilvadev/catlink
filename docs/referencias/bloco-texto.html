@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>BioLink Editor Preview</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#6366f1", // Indigo-500 equivalent from screenshot
+              "primary-dark": "#4f46e5",
+              "background-light": "#f3f4f6", // Gray-100
+              "background-dark": "#0f172a", // Slate-900
+              "surface-light": "#ffffff",
+              "surface-dark": "#1e293b", // Slate-800
+              "sidebar-dark": "#111827", // Gray-900
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+            },
+            boxShadow: {
+              phone: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              card: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 20px;
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #475569;
+      }
+      .phone-frame-gradient {
+        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+      }
+      .app-bg-pattern {
+        background-color: #f8fafc;
+        background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .dark .app-bg-pattern {
+        background-color: #0f172a;
+        background-image: radial-gradient(#334155 1px, transparent 1px);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-gray-800 dark:text-gray-200 font-sans h-screen flex overflow-hidden selection:bg-primary selection:text-white"
+  >
+    <aside
+      class="w-16 bg-sidebar-dark flex flex-col items-center py-6 shrink-0 z-20"
+    >
+      <div class="mb-8">
+        <div
+          class="w-10 h-10 bg-gradient-to-tr from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg"
+        >
+          <span class="material-icons-round text-white text-xl"
+            >auto_awesome</span
+          >
+        </div>
+      </div>
+      <nav class="flex-1 flex flex-col gap-6 w-full items-center">
+        <button
+          class="w-10 h-10 rounded-lg bg-gray-800 text-white flex items-center justify-center hover:bg-gray-700 transition-colors"
+        >
+          <span class="material-icons-round text-xl">add</span>
+        </button>
+        <button
+          class="w-10 h-10 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 flex items-center justify-center transition-colors"
+        >
+          <span class="material-icons-round text-xl">dashboard</span>
+        </button>
+        <button
+          class="w-10 h-10 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 flex items-center justify-center transition-colors"
+        >
+          <span class="material-icons-round text-xl">image</span>
+        </button>
+        <button
+          class="w-10 h-10 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 flex items-center justify-center transition-colors"
+        >
+          <span class="material-icons-round text-xl">layers</span>
+        </button>
+      </nav>
+      <div class="flex flex-col gap-6 mt-auto">
+        <button class="text-gray-400 hover:text-white transition-colors">
+          <span class="material-icons-round text-xl">settings</span>
+        </button>
+        <button class="text-gray-400 hover:text-white transition-colors">
+          <span class="material-icons-round text-xl">help_outline</span>
+        </button>
+        <div
+          class="w-8 h-8 rounded-full bg-gray-600 overflow-hidden border-2 border-gray-700"
+        >
+          <img
+            alt="User Profile"
+            class="w-full h-full object-cover"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtaV1IJwokVYf4tIWvqT0wRsKXzPXupi6kKG30GeFyphjd-Q6ce4jTZPUZZ8Y42uR3Z0oUifebnnX5CpGSehBlORCx9Zc8V-2rIFTX_POwd5aXbZ3d3gCLf0Ween9SD-lbahMg-5xdtOS0HnlmPALxFaL9m4TlqOwI7TCZdwyl4wwmxnppIrHOTaRcCFQ_8OOFIZ6ag0WKXvYlB9pP57c62myDlmA1oRfaWrr1uYnXx8ywkCRyXXCy-LZzEvime5BAVNe66rl5PBBu"
+          />
+        </div>
+      </div>
+    </aside>
+    <aside
+      class="w-80 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0 z-10 hidden lg:flex"
+    >
+      <div class="p-6 overflow-y-auto custom-scrollbar h-full">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="font-bold text-lg dark:text-white">Add Blocks</h2>
+          <button
+            class="text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+          >
+            <span class="material-icons-round">remove</span>
+          </button>
+        </div>
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div
+            class="bg-primary text-white p-4 rounded-xl shadow-lg flex flex-col items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-1 transition-transform relative overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"
+            ></div>
+            <div
+              class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center"
+            >
+              <span class="material-icons-round text-xl">title</span>
+            </div>
+            <span class="text-sm font-medium">Text</span>
+            <div
+              class="absolute -top-2 -left-2 text-white drop-shadow-md transform rotate-12"
+            >
+              <svg
+                fill="currentColor"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L6.35 2.85a.5.5 0 0 0-.85.35Z"
+                  stroke="black"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center"
+            >
+              <span class="material-icons-round text-xl">calendar_today</span>
+            </div>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-300"
+              >Calendar</span
+            >
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center"
+            >
+              <span class="material-icons-round text-xl">list_alt</span>
+            </div>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-300"
+              >Booking List</span
+            >
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center"
+            >
+              <span class="material-icons-round text-xl">image</span>
+            </div>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-300"
+              >Image</span
+            >
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center"
+            >
+              <span class="material-icons-round text-xl">smart_button</span>
+            </div>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-300"
+              >Button</span
+            >
+          </div>
+          <div
+            class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/50 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+          >
+            <div
+              class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 flex items-center justify-center"
+            >
+              <span class="material-icons-round text-xl">link</span>
+            </div>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-300"
+              >Link</span
+            >
+          </div>
+        </div>
+        <button
+          class="w-full py-3 bg-primary text-white rounded-xl font-medium shadow-md hover:bg-primary-dark transition-colors mb-8"
+        >
+          See Another Blocks
+        </button>
+        <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-gray-800 dark:text-white">
+              Social Media
+            </h3>
+            <button
+              class="text-gray-400 hover:text-primary dark:hover:text-primary"
+            >
+              <span class="material-icons-round">remove</span>
+            </button>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center gap-3 group cursor-pointer">
+              <div
+                class="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-white shrink-0"
+              >
+                <i class="fab fa-instagram text-sm"></i>
+              </div>
+              <span
+                class="text-sm text-gray-600 dark:text-gray-300 flex-1 truncate"
+                >instagram.com/rockagency</span
+              >
+              <button
+                class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <span class="material-icons-round text-sm">delete</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3 group cursor-pointer">
+              <div
+                class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0"
+              >
+                <i class="fab fa-facebook-f text-sm"></i>
+              </div>
+              <span
+                class="text-sm text-gray-600 dark:text-gray-300 flex-1 truncate"
+                >facebook.com/rockagency</span
+              >
+              <button
+                class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <span class="material-icons-round text-sm">delete</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3 group cursor-pointer">
+              <div
+                class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white shrink-0"
+              >
+                <i class="fab fa-youtube text-sm"></i>
+              </div>
+              <span
+                class="text-sm text-gray-600 dark:text-gray-300 flex-1 truncate"
+                >youtube.com/rockagency</span
+              >
+              <button
+                class="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <span class="material-icons-round text-sm">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+    <main class="flex-1 flex flex-col h-screen min-w-0">
+      <header
+        class="h-16 bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6 shrink-0 z-10"
+      >
+        <div class="flex items-center gap-6">
+          <div
+            class="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm"
+          >
+            <span class="material-icons-round text-lg">smartphone</span>
+            <span
+              class="material-icons-round text-lg text-gray-300 dark:text-gray-600"
+              >desktop_windows</span
+            >
+            <div class="ml-2 flex flex-col leading-tight">
+              <span class="text-xs">Size</span>
+              <span class="font-bold text-gray-800 dark:text-white"
+                >375 x 812</span
+              >
+            </div>
+            <span class="material-icons-round text-gray-400 text-sm ml-1"
+              >info</span
+            >
+          </div>
+        </div>
+        <div class="flex-1 max-w-xl mx-8">
+          <div class="relative group">
+            <div
+              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+            >
+              <span class="text-gray-400 text-sm">https://</span>
+            </div>
+            <input
+              class="block w-full pl-16 pr-24 py-2 border-none rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-primary/50 transition-all"
+              type="text"
+              value="smartbio.ai/rockagency"
+            />
+            <button
+              class="absolute right-1 top-1 bottom-1 px-4 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-full transition-colors"
+            >
+              Connect Domain
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div
+            class="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium"
+          >
+            <button
+              class="flex items-center gap-1 hover:text-primary transition-colors"
+            >
+              <span class="material-icons-round text-lg">undo</span> Undo
+            </button>
+            <button
+              class="flex items-center gap-1 hover:text-primary transition-colors ml-2"
+            >
+              <span class="material-icons-round text-lg">redo</span> Redo
+            </button>
+          </div>
+          <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+          <div class="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
+            <button
+              class="p-1.5 bg-white dark:bg-gray-600 rounded-full shadow-sm text-yellow-500"
+            >
+              <span class="material-icons-round text-sm">wb_sunny</span>
+            </button>
+            <button
+              class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <span class="material-icons-round text-sm">dark_mode</span>
+            </button>
+          </div>
+          <button
+            class="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            <span class="material-icons-round text-lg">visibility</span>
+          </button>
+          <button
+            class="bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg shadow-primary/30 transition-all"
+          >
+            <span class="material-icons-round text-sm">rocket_launch</span>
+            Publish
+            <span class="material-icons-round text-sm"
+              >keyboard_arrow_down</span
+            >
+          </button>
+        </div>
+      </header>
+      <div
+        class="flex-1 overflow-hidden relative flex flex-col items-center justify-center app-bg-pattern"
+      >
+        <div
+          class="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1.5 flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-300 z-10"
+        >
+          <button class="hover:text-primary">
+            <span class="material-icons-round text-sm">remove</span>
+          </button>
+          <span>90%</span>
+          <button class="hover:text-primary">
+            <span class="material-icons-round text-sm">add</span>
+          </button>
+        </div>
+        <div
+          class="relative w-[340px] h-[680px] bg-black rounded-[40px] shadow-phone border-[8px] border-black overflow-hidden z-0"
+        >
+          <div
+            class="absolute top-0 w-full h-8 z-20 flex justify-between items-center px-6 pt-2 text-white text-xs font-semibold"
+          >
+            <span>9:41</span>
+            <div class="flex gap-1.5 items-center">
+              <span class="material-icons-round text-[10px]"
+                >signal_cellular_alt</span
+              >
+              <span class="material-icons-round text-[10px]">wifi</span>
+              <span class="material-icons-round text-[10px] rotate-90"
+                >battery_full</span
+              >
+            </div>
+          </div>
+          <div
+            class="absolute top-2 left-1/2 transform -translate-x-1/2 w-24 h-6 bg-black rounded-full z-20"
+          ></div>
+          <div
+            class="w-full h-full bg-white relative overflow-y-auto overflow-x-hidden custom-scrollbar"
+          >
+            <div class="relative h-48 w-full overflow-hidden bg-white">
+              <div
+                class="absolute inset-0 bg-gradient-to-tr from-cyan-900 via-indigo-900 to-purple-800"
+              ></div>
+              <div
+                class="absolute top-0 left-0 w-full h-full opacity-60 mix-blend-overlay"
+              >
+                <div
+                  class="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-blue-500 rounded-full blur-3xl"
+                ></div>
+                <div
+                  class="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-pink-500 rounded-full blur-3xl"
+                ></div>
+              </div>
+              <div
+                class="absolute top-10 left-0 w-full px-4 flex justify-between items-center z-10 text-white"
+              >
+                <div class="flex items-center gap-1 font-bold text-sm">
+                  <span class="material-icons-round text-base"
+                    >auto_awesome</span
+                  >
+                  SmartBio
+                </div>
+                <button>
+                  <span class="material-icons-round text-xl">menu</span>
+                </button>
+              </div>
+              <div
+                class="absolute bottom-[-1px] left-0 w-full overflow-hidden leading-[0]"
+              >
+                <svg
+                  class="relative block w-[calc(140%+1.3px)] h-[50px] fill-white"
+                  data-name="Layer 1"
+                  preserveAspectRatio="none"
+                  viewBox="0 0 1200 120"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M600,112.77C268.63,112.77,0,65.52,0,7.23V120H1200V7.23C1200,65.52,931.37,112.77,600,112.77Z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div class="relative -mt-16 flex justify-center z-10">
+              <div
+                class="w-24 h-24 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-200"
+              >
+                <img
+                  alt="Profile Avatar"
+                  class="w-full h-full object-cover"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeFeSw-apJZAHOd-ZWUvTc2365vx8RFlT6RZKJyJFUlUYOdt79yiX5ZG0VyC4VqT2CCt0diz2G5y7iteKDhoNIx-VT9f5cPvo-N8CwXrtEpMug4AIfEWYMWAnx8MJxoZKO9xFXG9kx50tEpG2S0mxdMQREIzyFw1plNyUZ6Qn_8bmkUkhKZgiUYG6iYYjVjqOkz1GBXoo5vrkqYHpjFTDDWZYwNbrqSS3A42Z8xBI7ieYU_krQMo9Z_jlPBuc7yU2bx5ifPD54O1bs"
+                />
+              </div>
+            </div>
+            <div class="text-center px-6 mt-3 mb-6">
+              <h1 class="text-xl font-bold text-gray-900 mb-2">Rock Agency</h1>
+              <p
+                class="text-xs text-gray-500 leading-relaxed max-w-[260px] mx-auto"
+              >
+                Rock Agency is a digital agency company and website studio
+                specializing in products, commerce, and SaaS website.
+              </p>
+            </div>
+            <div class="flex justify-center gap-4 mb-8">
+              <a
+                class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                href="#"
+              >
+                <i class="fab fa-facebook-f text-sm"></i>
+              </a>
+              <a
+                class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                href="#"
+              >
+                <i class="fab fa-instagram text-sm"></i>
+              </a>
+              <a
+                class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                href="#"
+              >
+                <i class="fab fa-linkedin-in text-sm"></i>
+              </a>
+              <a
+                class="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
+                href="#"
+              >
+                <i class="fab fa-youtube text-sm"></i>
+              </a>
+            </div>
+            <div class="px-4 mb-4">
+              <div
+                class="rounded-2xl overflow-hidden shadow-sm border border-gray-100 relative h-40 bg-gray-100"
+              >
+                <img
+                  alt="Map Preview"
+                  class="w-full h-full object-cover opacity-80 grayscale-[30%]"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHRZi_dBQEc4J6faJkbNwPyxBdKfYVv9epPDQPdyj1CpGwyUnSxqmYu_BtG9CAZKDN31Wct8LtkZtdQ_fv1O2uvcBmRdipe-l4zGjjIEdZ-k0Yddqng_8-eqov0Jl83r1FK_W-p3G837zTs50uGSC9fu_JKKmHyCOcoyt1hujxAAUhVQ9M5_P-EVxffUAxGIOA7ertVSx1Z2cZicwLG8yJE2NDxmxrVI40BiIaWJjkaORoB63Hs_KYcN-XF517PjIkNdhw1NkDJB5a"
+                />
+                <div
+                  class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                >
+                  <div
+                    class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center animate-pulse"
+                  >
+                    <div
+                      class="w-4 h-4 rounded-full bg-primary border-2 border-white"
+                    ></div>
+                  </div>
+                  <div
+                    class="mt-1 bg-white/90 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold shadow-sm text-primary"
+                  >
+                    Union Coop Al
+                  </div>
+                  <button
+                    class="mt-1 bg-primary text-white text-[9px] font-bold px-2 py-1 rounded-full shadow-md"
+                  >
+                    See Our Location
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="px-4 mb-8">
+              <a
+                class="block w-full bg-gray-900 text-white py-3 rounded-full text-sm font-semibold text-center shadow-lg relative group overflow-hidden"
+                href="#"
+              >
+                <span
+                  class="relative z-10 flex items-center justify-center gap-2"
+                >
+                  <span class="material-icons-round text-sm">public</span>
+                  Visit our website
+                  <span class="absolute right-4 text-xs">↗</span>
+                </span>
+              </a>
+            </div>
+            <div
+              class="pb-6 flex justify-center items-center gap-1 opacity-50 hover:opacity-100 transition-opacity"
+            >
+              <div
+                class="bg-gray-100 rounded-full px-3 py-1 flex items-center gap-1 text-[10px] text-gray-500 border border-gray-200"
+              >
+                <span>smartbio.ai/yourpage</span>
+                <span
+                  class="material-icons-round text-[10px] bg-black text-white rounded-full p-[1px]"
+                  >arrow_outward</span
+                >
+              </div>
+            </div>
+            <div class="pb-8 text-center text-[9px] text-gray-400">
+              Upgrade to remove
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute right-0 top-1/2 -translate-y-1/2 bg-surface-dark text-white p-1 rounded-l-lg cursor-pointer"
+        >
+          <div
+            class="writing-mode-vertical py-2 px-1 text-xs font-bold tracking-wide"
+          >
+            Hide
+            <span class="material-icons-round text-xs rotate-180"
+              >keyboard_arrow_down</span
+            >
+          </div>
+        </div>
+      </div>
+    </main>
+    <aside
+      class="w-80 bg-surface-light dark:bg-surface-dark border-l border-gray-200 dark:border-gray-700 flex flex-col shrink-0 z-10 hidden xl:flex overflow-y-auto custom-scrollbar"
+    >
+      <div class="p-6 pb-2 h-full flex flex-col">
+        <div
+          class="flex items-center gap-3 mb-6 pb-4 border-b border-gray-200 dark:border-gray-700"
+        >
+          <button
+            class="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 transition-colors"
+          >
+            <span class="material-icons-round">arrow_back</span>
+          </button>
+          <h2 class="font-bold text-lg text-gray-800 dark:text-white flex-1">
+            Text Block
+          </h2>
+          <button
+            class="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center text-red-500 transition-colors"
+          >
+            <span class="material-icons-round text-sm">delete</span>
+          </button>
+        </div>
+        <div class="flex-1 overflow-y-auto pr-1">
+          <div class="mb-6">
+            <label
+              class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2"
+              >Content</label
+            >
+            <div
+              class="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-primary/50 focus-within:border-primary transition-all"
+            >
+              <div
+                class="flex items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50"
+              >
+                <button
+                  class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <span class="material-icons-round text-sm">format_bold</span>
+                </button>
+                <button
+                  class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <span class="material-icons-round text-sm"
+                    >format_italic</span
+                  >
+                </button>
+                <button
+                  class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <span class="material-icons-round text-sm"
+                    >format_underlined</span
+                  >
+                </button>
+                <div class="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+                <button
+                  class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <span class="material-icons-round text-sm"
+                    >format_align_left</span
+                  >
+                </button>
+                <button
+                  class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <span class="material-icons-round text-sm"
+                    >format_align_center</span
+                  >
+                </button>
+                <button
+                  class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <span class="material-icons-round text-sm"
+                    >format_align_right</span
+                  >
+                </button>
+              </div>
+              <textarea
+                class="w-full h-32 p-3 bg-white dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-200 resize-none border-none focus:ring-0"
+                placeholder="Enter your text here..."
+              >
+Rock Agency is a digital agency company and website studio specializing in products, commerce, and SaaS website.</textarea>
+            </div>
+            <div class="mt-2 text-right">
+              <span class="text-[10px] text-gray-400">112/500 characters</span>
+            </div>
+          </div>
+          <hr class="border-gray-200 dark:border-gray-700 mb-6" />
+          <div class="mb-6">
+            <h3 class="font-bold text-gray-800 dark:text-white text-sm mb-4">
+              Appearance
+            </h3>
+            <div class="mb-4">
+              <div class="flex justify-between items-center mb-2">
+                <label
+                  class="text-xs text-gray-600 dark:text-gray-400 font-medium"
+                  >Font Size</label
+                >
+                <span
+                  class="text-xs text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded"
+                  >16px</span
+                >
+              </div>
+              <input
+                class="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-primary"
+                max="48"
+                min="10"
+                type="range"
+                value="16"
+              />
+            </div>
+            <div class="mb-4">
+              <label
+                class="block text-xs text-gray-600 dark:text-gray-400 font-medium mb-2"
+                >Text Color</label
+              >
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-10 h-10 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-900 cursor-pointer shadow-sm relative group"
+                >
+                  <div
+                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100"
+                  >
+                    <span class="material-icons-round text-white text-sm"
+                      >edit</span
+                    >
+                  </div>
+                </div>
+                <input
+                  class="flex-1 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 focus:ring-primary focus:border-primary uppercase text-gray-600 dark:text-gray-300"
+                  type="text"
+                  value="#111827"
+                />
+              </div>
+            </div>
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <label
+                  class="text-xs text-gray-600 dark:text-gray-400 font-medium"
+                  >Background Color</label
+                >
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input class="sr-only peer" type="checkbox" value="" />
+                  <div
+                    class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/20 dark:peer-focus:ring-primary/30 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary"
+                  ></div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <hr class="border-gray-200 dark:border-gray-700 mb-6" />
+          <div class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="font-bold text-gray-800 dark:text-white text-sm">
+                Layout &amp; Spacing
+              </h3>
+              <button class="text-gray-400 hover:text-primary">
+                <span class="material-icons-round text-sm">expand_less</span>
+              </button>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <span
+                  class="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block"
+                  >Top Padding</span
+                >
+                <div class="relative">
+                  <input
+                    class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary"
+                    type="number"
+                    value="16"
+                  />
+                  <span
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+                    >px</span
+                  >
+                </div>
+              </div>
+              <div>
+                <span
+                  class="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block"
+                  >Bottom Padding</span
+                >
+                <div class="relative">
+                  <input
+                    class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:ring-primary focus:border-primary"
+                    type="number"
+                    value="16"
+                  />
+                  <span
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400"
+                    >px</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pt-4 border-t border-gray-200 dark:border-gray-700 mt-auto">
+          <button
+            class="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-md hover:bg-primary-dark transition-colors flex items-center justify-center gap-2"
+          >
+            <span class="material-icons-round text-sm">save</span> Save Changes
+          </button>
+        </div>
+      </div>
+    </aside>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-export default function EditorToolbar() {
+export default function EditorToolbar({ slug }: { slug?: string }) {
   return (
     <header className="h-16 bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6 shrink-0 z-10">
       <div className="flex items-center gap-6">
@@ -9,8 +9,8 @@ export default function EditorToolbar() {
           </span>
           <div className="ml-2 flex flex-col leading-tight">
             <span className="text-xs">Size</span>
-            <span className="font-bold text-gray-800 dark:text-white">
-              375 x 812
+            <span className="whitespace-nowrap font-bold text-gray-800 dark:text-white">
+              300 × 600
             </span>
           </div>
           <span className="material-icons-round text-gray-400 text-sm ml-1">
@@ -26,7 +26,9 @@ export default function EditorToolbar() {
           <input
             className="block w-full pl-16 pr-24 py-2 border-none rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white text-sm focus:ring-2 focus:ring-primary/50 transition-all"
             type="text"
-            defaultValue="smartbio.ai/rockagency"
+            value={slug ? `catlink/${slug}` : "catlink/seunome"}
+            readOnly
+            aria-label="Endereço do perfil"
           />
           <button className="absolute right-1 top-1 bottom-1 px-4 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-full transition-colors">
             Connect Domain

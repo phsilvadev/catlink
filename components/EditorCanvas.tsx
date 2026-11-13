@@ -3,17 +3,19 @@ import PhonePreview, { type SavedPreview } from "./PhonePreview";
 
 type Props = {
   savedPage?: SavedPreview;
+  onSelectText?: (id: string) => void;
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
 };
 export default function EditorCanvas({
   sidebarOpen,
   savedPage,
+  onSelectText,
   onToggleSidebar,
 }: Props) {
   return (
     <main className="flex-1 flex flex-col h-screen min-w-0">
-      <EditorToolbar />
+      <EditorToolbar slug={savedPage?.slug} />
       <div className="flex-1 overflow-hidden relative flex flex-col items-center justify-center app-bg-pattern">
         <div className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-full px-3 py-1.5 flex items-center gap-3 text-sm font-medium text-gray-600 dark:text-gray-300 z-10">
           <button className="hover:text-primary">
@@ -24,7 +26,7 @@ export default function EditorCanvas({
             <span className="material-icons-round text-sm">add</span>
           </button>
         </div>
-        <PhonePreview page={savedPage} />
+        <PhonePreview page={savedPage} onSelectText={onSelectText} />
         <button
           type="button"
           onClick={onToggleSidebar}
