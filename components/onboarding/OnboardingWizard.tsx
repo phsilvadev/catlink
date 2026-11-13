@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import UsernameStep from "./UsernameStep";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   ArrowLeft,
@@ -63,6 +64,7 @@ export default function OnboardingWizard({ initial, templates }: Props) {
     [uploading, setUploading] = useState(false),
     [error, setError] = useState("");
   const [conflict, setConflict] = useState(false);
+  const [errorCode, setErrorCode] = useState("");
   const heading = useRef<HTMLHeadingElement>(null),
     photo = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -72,6 +74,7 @@ export default function OnboardingWizard({ initial, templates }: Props) {
   function change(update: Partial<OnboardingState>) {
     setState((current) => ({ ...current, ...update }));
     setError("");
+    setErrorCode("");
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -107,6 +110,7 @@ export default function OnboardingWizard({ initial, templates }: Props) {
     }
     setBusy(true);
     setError("");
+    setErrorCode("");
     try {
       const response = await fetch("/api/onboarding", {
         method: "POST",
@@ -117,6 +121,7 @@ export default function OnboardingWizard({ initial, templates }: Props) {
       if (!response.ok) {
         setError(result.message || "Não foi possível salvar. Tente novamente.");
         setConflict(result.code === "CONFLICT");
+        setErrorCode(result.code ?? "");
         return;
       }
       setState(result.data.state);
@@ -176,6 +181,19 @@ export default function OnboardingWizard({ initial, templates }: Props) {
     "w-full rounded-xl border-gray-200 bg-white px-4 py-3 text-sm focus:border-primary focus:ring-primary";
   const cardClass =
     "rounded-2xl border p-5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary";
+  if (step === 1 && !completed)
+    return (
+      <UsernameStep
+        value={state.slug}
+        onChange={(slug) => change({ slug })}
+        onSubmit={submit}
+        busy={busy}
+        error={error}
+        conflict={conflict}
+        heading={heading}
+        serverTaken={errorCode === "SLUG_TAKEN"}
+      />
+    );
   return (
     <div className="flex min-h-screen bg-white text-gray-800">
       <aside className="auth-showcase sticky top-0 hidden h-screen w-5/12 shrink-0 flex-col justify-between overflow-hidden bg-sidebar-dark p-8 lg:flex">
@@ -254,38 +272,6 @@ export default function OnboardingWizard({ initial, templates }: Props) {
                 disabled={busy || uploading || conflict}
                 className="space-y-5 disabled:opacity-70"
               >
-                {step === 1 && (
-                  <div>
-                    <label
-                      htmlFor="slug"
-                      className="mb-2 block text-sm font-medium"
-                    >
-                      Nome do endereço
-                    </label>
-                    <div className="flex items-center rounded-xl border border-gray-200 pl-4">
-                      <span className="text-gray-400">/</span>
-                      <input
-                        id="slug"
-                        name="slug"
-                        autoComplete="off"
-                        autoCapitalize="none"
-                        spellCheck={false}
-                        value={state.slug}
-                        maxLength={40}
-                        onChange={(event) =>
-                          change({ slug: event.target.value.toLowerCase() })
-                        }
-                        placeholder="seu-nome"
-                        className="w-full border-0 bg-transparent px-2 py-3 focus:ring-0"
-                        aria-describedby="slug-help"
-                      />
-                    </div>
-                    <p id="slug-help" className="mt-3 text-xs text-gray-500">
-                      De 3 a 40 caracteres. O endereço será verificado ao
-                      continuar; a reserva acontece ao concluir.
-                    </p>
-                  </div>
-                )}
                 {step === 2 && (
                   <div className="grid gap-4 sm:grid-cols-2">
                     {profileKinds.map((kind, index) => (

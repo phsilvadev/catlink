@@ -81,3 +81,13 @@ retomada após reload, celular, upload real ao S3 de teste, proteção de fotos 
 contas, salto de etapas, revisão conflitante, bloqueio de modelo e revogação antes
 de concluir. O Playwright injeta credenciais/endpoint S3 fictícios somente no
 servidor de teste; não usar essas configurações em produção.
+
+## Disponibilidade do endereço
+
+A primeira etapa conserva a estrutura do HTML de referência enviado: formulário
+centralizado de 420 px e ilustração lateral no desktop. Após 450 ms sem digitação,
+a API autenticada consulta a disponibilidade no PostgreSQL. Durante a consulta,
+o campo mostra um spinner e a mensagem de verificação; o check verde e o botão
+de confirmar só são habilitados após uma resposta de disponibilidade. Editar o
+nome cancela a consulta anterior e invalida o check. Falhas permitem nova tentativa.
+A verificação não reserva o nome: salvar e concluir também validam unicidade.

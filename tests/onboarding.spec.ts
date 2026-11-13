@@ -91,7 +91,7 @@ test("primeiro acesso no celular persiste etapas, foto e perfil e cria um só ra
   await page.getByRole("button", { name: "Criar conta", exact: true }).click();
   await expect(page).toHaveURL(/\/app\/primeiro-acesso$/);
   await page.getByLabel("Nome do endereço").fill(`perfil-${suffix}`);
-  await page.getByRole("button", { name: "Salvar e continuar" }).click();
+  await page.getByRole("button", { name: "Confirmar nome de usuário" }).click();
   await expect(
     page.getByRole("heading", { name: "O que descreve você?" }),
   ).toBeVisible();
