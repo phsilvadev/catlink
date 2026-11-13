@@ -114,7 +114,12 @@ export const onboardingInputSchema = z.discriminatedUnion("step", [
     .object({
       step: z.literal(4),
       expectedRevision: z.number().int().nonnegative(),
-      data: z.object({ templateKey: z.string().min(1).max(80) }).strict(),
+      data: z
+        .object({
+          templateKey: z.string().min(1).max(80),
+          complete: z.boolean().optional(),
+        })
+        .strict(),
     })
     .strict(),
   z

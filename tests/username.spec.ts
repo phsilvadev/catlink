@@ -41,7 +41,9 @@ test.beforeEach(async ({ page }) => {
 test("pausa de digitação mostra spinner antes do sucesso e invalida checks anteriores", async ({
   page,
 }) => {
-  await page.clock.install();
+  const start = new Date("2026-11-13T12:00:00Z");
+  await page.clock.install({ time: start });
+  await page.clock.pauseAt(new Date(start.getTime() + 1000));
   const calls: string[] = [];
   let release: () => void = () => undefined;
   await page.route("**/api/onboarding/slug?*", async (route) => {
@@ -54,8 +56,8 @@ test("pausa de digitação mostra spinner antes do sucesso e invalida checks ant
       .fulfill({ json: { data: { slug, available: true } } })
       .catch(() => undefined);
   });
-  const input = page.getByLabel("Nome do endereço"),
-    submit = page.getByRole("button", { name: "Confirmar nome de usuário" });
+  const input = page.getByLabel("Nome de usuário"),
+    submit = page.getByRole("button", { name: "Confirmar meu link" });
   await input.fill("primeiro-nome");
   await page.clock.fastForward(300);
   await input.fill("segundo-nome");
@@ -105,7 +107,7 @@ test("respostas antigas não substituem nome ocupado; erro permite tentar novame
     }
     await route.fulfill({ json: { data: { slug, available: false } } });
   });
-  const input = page.getByLabel("Nome do endereço");
+  const input = page.getByLabel("Nome de usuário");
   await input.fill("nome-antigo");
   await expect(page.getByTestId("slug-check-spinner")).toBeVisible();
   await input.fill("nome-ocupado");
@@ -141,10 +143,10 @@ test("consulta real autentica, valida nomes e segue as medidas do HTML", async (
   expect(response.headers()["cache-control"]).toBe("no-store");
   expect((await response.json()).data.available).toBe(false);
   await page.setViewportSize({ width: 837, height: 872 });
-  await page.getByLabel("Nome do endereço").fill(taken);
+  await page.getByLabel("Nome de usuário").fill(taken);
   await expect(page.getByRole("status")).toContainText("já está em uso");
   await expect(
-    page.getByRole("button", { name: "Confirmar nome de usuário" }),
+    page.getByRole("button", { name: "Confirmar meu link" }),
   ).toBeDisabled();
   const box = await page.getByTestId("username-panel").boundingBox();
   expect(box!.width).toBe(420);

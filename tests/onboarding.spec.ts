@@ -78,7 +78,7 @@ test.afterAll(async () => {
     );
 });
 
-test("primeiro acesso no celular persiste etapas, foto e perfil e cria um só rascunho", async ({
+test("onboarding aprovado em quatro etapas salva progresso e cria um único rascunho", async ({
   page,
   context,
 }) => {
@@ -90,93 +90,107 @@ test("primeiro acesso no celular persiste etapas, foto e perfil e cria um só ra
   await page.getByLabel("Senha", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Criar conta", exact: true }).click();
   await expect(page).toHaveURL(/\/app\/primeiro-acesso$/);
-  await page.getByLabel("Nome do endereço").fill(`perfil-${suffix}`);
-  await page.getByRole("button", { name: "Confirmar nome de usuário" }).click();
+  await page.getByLabel("Nome de usuário").fill(`perfil-${suffix}`);
+  await page.getByRole("button", { name: "Confirmar meu link" }).click();
   await expect(
     page.getByRole("heading", { name: "O que descreve você?" }),
   ).toBeVisible();
+  await page.getByRole("radio", { name: /Marca pessoal/ }).check();
+  await page.getByRole("button", { name: "Salvar e continuar" }).click();
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "O que descreve você?" }),
+    page.getByRole("heading", { name: "Quais plataformas você usa?" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: /Marca pessoal/ }).click();
-  await page.getByRole("button", { name: "Salvar e continuar" }).click();
-  await page.getByRole("button", { name: "Instagram", exact: true }).click();
-  await page.getByRole("button", { name: "Salvar e continuar" }).click();
-  await page.getByRole("button", { name: /Básico/ }).click();
-  await page.getByRole("button", { name: "Salvar e continuar" }).click();
-  await page.getByLabel("Nome do perfil").fill("Meu perfil salvo");
-  await page
-    .getByLabel("Bio", { exact: true })
-    .fill("Olá, este é meu Catlink.");
-  await page
-    .getByLabel("Link do Instagram (opcional)")
-    .fill("https://instagram.com/exemplo");
-  const image = await sharp({
-    create: { width: 60, height: 60, channels: 3, background: "#6366f1" },
-  })
-    .png()
-    .toBuffer();
-  await page
-    .getByLabel("Selecionar foto do perfil")
-    .setInputFiles({ name: "foto.png", mimeType: "image/png", buffer: image });
+  for (const name of ["Instagram", "WhatsApp", "TikTok", "YouTube", "Site"])
+    await page.getByRole("checkbox", { name, exact: true }).check();
   await expect(
-    page.getByRole("button", { name: "Remover foto" }),
-  ).toBeVisible();
+    page.getByRole("checkbox", { name: "Spotify", exact: true }),
+  ).toBeDisabled();
   await page.getByRole("button", { name: "Salvar e continuar" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Tudo pronto para começar" }),
-  ).toBeVisible();
   await page.reload();
+  await page.getByRole("radio", { name: "Tema Básico", exact: true }).check();
   await expect(
-    page.getByText("Meu perfil salvo", { exact: true }).last(),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Criar meu rascunho" }).click();
+    page.getByRole("radio", { name: "Tema Rosa", exact: true }),
+  ).toBeDisabled();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
   await expect(
-    page.getByRole("heading", { name: "Seu Catlink está pronto para editar!" }),
-  ).toBeVisible();
-  const state = await context.request
-    .get("/api/onboarding")
-    .then((response) => response.json());
-  const id = state.data.completedPageId;
-  const draft = await context.request
-    .get(`/api/pages/${id}`)
-    .then((response) => response.json());
-  expect(draft.data.publishedVersionId).toBe(null);
-  expect(draft.data.draft.profile.name).toBe("Meu perfil salvo");
-  expect(draft.data.draft.blocks[0].items[0].url).toBe(
-    "https://instagram.com/exemplo",
+    page.getByRole("button", { name: "Mostrar próximo modelo" }),
+  ).toBeInViewport();
+  await page.getByRole("button", { name: "Mostrar próximo modelo" }).click();
+  await expect(page.getByText("Rosa", { exact: true })).toBeInViewport();
+  await page.getByRole("button", { name: "Concluir configuração" }).click();
+  await expect(page).toHaveURL(/\/app\/editor\//);
+  const state = (await (await context.request.get("/api/onboarding")).json())
+    .data;
+  const id = state.completedPageId;
+  const draft = (await (await context.request.get(`/api/pages/${id}`)).json())
+    .data;
+  expect(draft.publishedVersionId).toBe(null);
+  expect(draft.templateKey).toBe("basic");
+  expect(state.state.platforms).toHaveLength(5);
+  const repeated = await step(
+    context.request,
+    4,
+    { templateKey: "basic", complete: true },
+    state.revision - 1,
   );
-  const avatar = await context.request.get(
-    `/api/assets/${draft.data.draft.profile.avatarAssetId}`,
-  );
-  expect(avatar.status()).toBe(200);
-  expect((await sharp(await avatar.body()).metadata()).format).toBe("webp");
-  const repeated = await step(context.request, 6, {}, state.data.revision - 1);
   expect(repeated.status()).toBe(200);
   expect((await repeated.json()).data.completedPageId).toBe(id);
   expect(
-    (
-      await context.request
-        .get("/api/pages")
-        .then((response) => response.json())
-    ).data,
+    (await (await context.request.get("/api/pages")).json()).data,
   ).toHaveLength(1);
-  await page.getByRole("link", { name: "Continuar no editor" }).click();
-  await expect(page).toHaveURL(new RegExp(`/app/editor/${id}$`));
-  await expect(
-    page.getByRole("heading", { name: "Meu perfil salvo", exact: true }),
-  ).toBeVisible();
   await page.goto("/app");
-  await expect(
-    page.getByRole("heading", { name: "Minhas páginas", exact: true }),
-  ).toBeVisible();
   await expect(page.getByRole("article")).toContainText("Rascunho");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
+});
+
+test("prévia interativa no login e conclusão direta não contorna etapas ou plano", async ({
+  page,
+  playwright,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/login");
+  await page.getByRole("button", { name: "Experimentar tema Rosa" }).click();
+  await expect(page.locator(".showcase-phone")).toHaveAttribute(
+    "data-theme",
+    "sunset",
+  );
+  await page.getByRole("button", { name: "Calendário", exact: true }).click();
+  await expect(page.getByTestId("demo-block")).toContainText(
+    "Agende uma conversa",
+  );
+  const a = await playwright.request.newContext({ baseURL: origin });
+  await account(a, "four-step");
+  expect(
+    (await step(a, 4, { templateKey: "basic", complete: true }, 0)).status(),
+  ).toBe(400);
+  await step(a, 1, { slug: `four-step-${suffix}` }, 0);
+  await step(a, 2, { kind: "creator" }, 1);
+  await step(a, 3, { platforms: [] }, 2);
+  expect(
+    (await step(a, 4, { templateKey: "sunset", complete: true }, 3)).status(),
+  ).toBe(403);
+  expect(
+    (await step(a, 4, { templateKey: "basic", complete: true }, 2)).status(),
+  ).toBe(409);
+  expect((await (await a.get("/api/pages")).json()).data).toHaveLength(0);
+  const completed = await step(
+    a,
+    4,
+    { templateKey: "basic", complete: true },
+    3,
+  );
+  expect(completed.status()).toBe(200);
+  expect((await completed.json()).data.completedPageId).toBeTruthy();
+  await a.dispose();
 });
 
 test("onboarding rejeita saltos, conflito entre abas, URLs inválidas e foto de outra conta", async ({

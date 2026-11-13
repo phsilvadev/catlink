@@ -87,7 +87,7 @@ export async function updateOnboarding(userId: string, input: unknown) {
       state.profile = request.data.profile;
       state.links = request.data.links;
     }
-    if (request.step === 6) {
+    if (request.step === 6 || (request.step === 4 && request.data.complete)) {
       slugSchema.parse(state.slug);
       if (!state.kind)
         throw new DomainError(

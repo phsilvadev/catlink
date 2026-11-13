@@ -21,6 +21,45 @@
         "accent": "#6366f1",
         "initialBlocks": []
       }
+    },
+    {
+      "key": "sunset",
+      "name": "Rosa",
+      "description": "Modelo Rosa para personalizar sua página.",
+      "version": 1,
+      "config": {
+        "schemaVersion": 1,
+        "background": "#fff1f2",
+        "foreground": "#831843",
+        "accent": "#db2777",
+        "initialBlocks": []
+      }
+    },
+    {
+      "key": "mint",
+      "name": "Menta",
+      "description": "Modelo Menta para personalizar sua página.",
+      "version": 1,
+      "config": {
+        "schemaVersion": 1,
+        "background": "#f0fdfa",
+        "foreground": "#134e4a",
+        "accent": "#0d9488",
+        "initialBlocks": []
+      }
+    },
+    {
+      "key": "pixel",
+      "name": "PixelMaster",
+      "description": "Modelo PixelMaster para personalizar sua página.",
+      "version": 1,
+      "config": {
+        "schemaVersion": 1,
+        "background": "#17152b",
+        "foreground": "#f5f3ff",
+        "accent": "#8b5cf6",
+        "initialBlocks": []
+      }
     }
   ],
   "blocks": [

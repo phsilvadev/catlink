@@ -1,93 +1,69 @@
-# Primeiro acesso e primeira página
+# Primeiro acesso
 
-O fluxo está em `/app/primeiro-acesso`, baseado nos HTMLs registrados no cartão 07.
-Após cadastrar/entrar, `/app` direciona contas sem páginas para esse fluxo. Contas
-com páginas veem o painel. Todas as rotas exigem sessão no servidor.
+O HTML aprovado está preservado em `docs/referencias/onboarding-aprovado.html`.
+A interface foi convertida em componentes React, com estilos limitados a
+`.entry-flow`, sem executar os scripts/CDN do protótipo nem alterar o editor.
 
-## Etapas
+## Fluxo atual
 
-1. Nome/endereço: valida formato, nomes reservados e disponibilidade no banco.
-2. Tipo de perfil: criador, negócio, marca pessoal, influenciador, artista ou outro.
-3. Até cinco plataformas; etapa opcional.
-4. Modelo: catálogo real do banco, com itens fora do plano bloqueados.
-5. Foto opcional, nome, bio e links opcionais das plataformas escolhidas.
-6. Revisão: cria uma página como rascunho privado; não publica automaticamente.
+Cadastro com e-mail/senha → link → tipo de perfil → até cinco plataformas
+(opcional) → modelo → editor do rascunho. Login e cadastro compartilham a
+ilustração interativa do HTML; cadastro mantém apenas seu formulário de conta.
+A prévia permite experimentar blocos e temas e se expande na seleção de modelo.
+Esses exemplos não acrescentam blocos ou autorizam modelos na página real.
 
-Cada clique em "Salvar e continuar" persiste a etapa no PostgreSQL. Campos ainda
-não confirmados no formulário não são salvos automaticamente. Ao recarregar ou
-entrar novamente, o fluxo retoma a próxima etapa salva. O usuário pode voltar e
-alterar etapas anteriores. Endereço é verificado inicialmente, mas só é reservado
-na conclusão, quando há nova validação pela restrição única do banco.
+Após 450 ms sem digitação, a API autenticada verifica o username no PostgreSQL.
+O campo mostra spinner e “Verificando nome de usuário…” durante a consulta.
+Check verde e confirmação dependem da disponibilidade real. Editar cancela a
+consulta anterior e invalida o check; falha de rede permite tentar novamente.
+Mantidas as regras de endereço do projeto: 3–40 letras minúsculas, números e
+hífens, sem nomes reservados. A consulta não reserva o endereço.
 
-Estado em Onboarding: userId, revision, state JSONB validado, completedPageId e
-updatedAt. Não se aceita userId/plano/página concluída do navegador. Escritas são
-serializadas na conta; revisões evitam sobrescrita entre abas. Conclusão é atômica
-e idempotente: repetição retorna a mesma página, sem criar uma segunda.
+Cada etapa salva ao continuar; recarregar retoma o progresso. Revisões e lock
+por conta impedem sobrescrita entre abas. Na etapa 4, o cliente envia
+`{templateKey, complete:true}`: o servidor valida etapas anteriores, endereço,
+modelo, blocos e limite por plano, cria uma única página privada e conclui o
+progresso numa transação. Repetir a conclusão retorna a mesma página.
 
-Modelos e blocos são revalidados no servidor na seleção e na conclusão. O limite
-de páginas é verificado na mesma transação de criação. Links tornam-se um bloco
-SOCIAL com URLs http/https validadas. A página aponta para o snapshot da versão do
-modelo aplicado. A bio aceita até 500 caracteres; nome até 80.
+O fluxo anterior de seis etapas continua aceito na API para compatibilidade.
+Sessões antigas nas etapas 5/6 abrem a seleção de modelo; perfil, foto e links já
+salvos são preservados ao concluir. Foto/bio e revisão não são telas obrigatórias
+no novo onboarding de quatro etapas. Não há publicação automática.
 
-## Plano gratuito aprovado
+## Catálogo
 
-Modelo Básico e blocos texto, link, botão, imagem e redes sociais. Uma página por
-conta. O seed e a migração `20261109150000_onboarding` criam as concessões aprovadas;
-versões/configurações existentes não são sobrescritas. Outros modelos/tipos exigem
-concessões explícitas. Não existe limite/preço pago padrão inventado.
+Modelos vêm de `GET /api/catalog`, com permissões resolvidas pelo servidor.
+Básico continua gratuito. Rosa, Menta e PixelMaster são adicionados ao catálogo,
+sem concessões automáticas; aparecem bloqueados até liberação a um plano.
+O HTML é uma referência visual, não uma autorização para liberar todos os itens.
+Itens bloqueados não podem ser escolhidos por teclado, clique ou requisição direta.
 
-## Foto e armazenamento
+## Componentes
 
-Upload autenticado em POST `/api/assets/avatar`, com corpo binário, Origin válida,
-limite de 5 MB, decodificação real por Sharp e formatos JPEG/PNG/WebP. Imagem é
-orientada, redimensionada para até 512 × 512 e reencodada em WebP, sem metadados
-originais. SVG/GIF e arquivos inválidos não são aceitos.
+- `components/entry/EntryShowcase.tsx`: prévia compartilhada e suas interações.
+- `components/entry/entry.css`: estilos convertidos do HTML e arquivos auxiliares.
+- `components/onboarding/OnboardingWizard.tsx`: quatro etapas persistidas.
+- `components/onboarding/UsernameField.tsx`: campo e indicador de disponibilidade.
+- `components/auth/AuthForm.tsx`: formulários reais do Better Auth.
 
-Arquivos ficam no bucket compatível com S3; o banco guarda Asset com ownerId,
-chave, tipo e tamanho. Configure no ambiente de execução:
+## Limites e compatibilidade
 
-- S3_ENDPOINT, S3_REGION, S3_BUCKET;
-- S3_ACCESS_KEY_ID e S3_SECRET_ACCESS_KEY (somente servidor).
+`/app` lista páginas e `/app/editor/:id` verifica propriedade e carrega a prévia
+real. Os demais controles do editor continuam demonstrativos. Sem rota pública
+/usuario, cobrança ou criação comercial de páginas adicionais nesta entrega.
+Uploads S3 e APIs de perfil existentes permanecem disponíveis; e-mail segue adiado.
 
-Sem essas variáveis, envio retorna mensagem de indisponibilidade e o usuário pode
-continuar sem foto. Nenhum bucket Railway foi provisionado por esta entrega.
-GET `/api/assets/:id` entrega a imagem somente ao dono autenticado, com no-store.
-Uma conta não consegue associar ao seu perfil uma foto pertencente a outra.
+## Validação
 
-Remover/trocar foto no formulário remove a associação, sem apagar objeto que
-possa estar referenciado. Limpeza de arquivos sem uso e quotas totais de storage
-ficam para uma entrega posterior. Antes de abrir uploads em produção, configurar
-limites operacionais, monitoramento e política de limpeza. Nos testes usamos um
-servidor S3 de teste local, sem enviar dados a bucket real.
+`npm run check` verifica formatação, lint, tipos e build. `npm run test:e2e` usa
+banco isolado `_test` e S3 local. Cobre cadastro/login/logout, quatro etapas no
+celular, retomada, rascunho único, limite de plataformas, modelo bloqueado,
+conclusão sem etapas prévias, conflito entre abas, prévia interativa, autocheck
+com debounce e descarte de respostas antigas. APIs anteriores continuam testadas
+para upload, autorização, URLs, planos e revogação de concessões.
 
-## Painel e editor
+## Branch
 
-`/app` lista páginas da conta e status Rascunho/Publicada. Conta gratuita com uma
-página recebe a informação do limite. Criação comercial de páginas adicionais
-segue pendente com os planos pagos.
-
-`/app/editor/:id` verifica propriedade e carrega a prévia real do rascunho salvo,
-incluindo nome, bio, foto e links. Página de outra conta resulta em 404. O renderer
-`components/page/PageContent.tsx` é compartilhado com a prévia do onboarding.
-Os demais controles do editor continuam demonstrativos; a edição de blocos e
-salvamento interativo no editor completo são entregas seguintes. Não há rota
-pública /usuario ainda. A API de snapshots existente não substitui essa rota.
-
-## Testes
-
-Rodar migrações/seed e `npm run check`. `npm run test:e2e` usa banco `_test` e build
-de produção. A suíte inclui cadastro→primeiro acesso→rascunho→editor→painel,
-retomada após reload, celular, upload real ao S3 de teste, proteção de fotos entre
-contas, salto de etapas, revisão conflitante, bloqueio de modelo e revogação antes
-de concluir. O Playwright injeta credenciais/endpoint S3 fictícios somente no
-servidor de teste; não usar essas configurações em produção.
-
-## Disponibilidade do endereço
-
-A primeira etapa conserva a estrutura do HTML de referência enviado: formulário
-centralizado de 420 px e ilustração lateral no desktop. Após 450 ms sem digitação,
-a API autenticada consulta a disponibilidade no PostgreSQL. Durante a consulta,
-o campo mostra um spinner e a mensagem de verificação; o check verde e o botão
-de confirmar só são habilitados após uma resposta de disponibilidade. Editar o
-nome cancela a consulta anterior e invalida o check. Falhas permitem nova tentativa.
-A verificação não reserva o nome: salvar e concluir também validam unicidade.
+Trabalhar e enviar alterações somente em `development`. Ela contém o histórico
+completo das branches anteriores, sem squash nem perda de commits. Não criar
+branches por tarefa. Branches antigas são referências históricas, sem trabalho novo.

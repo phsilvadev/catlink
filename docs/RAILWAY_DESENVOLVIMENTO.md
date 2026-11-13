@@ -10,10 +10,11 @@ Ambiente configurado em 13/11/2026.
 
 ## Código e deploy
 
-Versão validada: commit `32293540bf122b0847ba57fd80086c9d6ec2221a` da branch
-`feat/07-first-access`. O serviço está **fixado nesse commit**. Novos pushes não
-alteram esse ambiente enquanto a origem não for reconectada a outro commit ou
-configurada novamente sem fixação. Não presumir que a main contém esta entrega.
+A branch de trabalho consolidada é `development`. Atualizar a origem do serviço
+para essa branch ao publicar esta entrega. O serviço pode permanecer fixado no
+commit validado; nesse caso, um push sozinho não altera o ambiente. Confirmar
+sempre o commit da implantação e aguardar status SUCCESS antes de afirmar que
+está publicado. As versões anteriores ficam registradas no histórico do Railway.
 
 - Node.js 24 via Railpack.
 - Build: `npm run build`.
@@ -22,10 +23,6 @@ configurada novamente sem fixação. Não presumir que a main contém esta entre
 - PORT=3000 e domínio direcionado à mesma porta.
 - Healthcheck: `/api/health`, verificando conexão e inicialização do banco.
 - Sem publicação automática de páginas; concluir onboarding continua criando rascunho.
-
-Deployment ativo validado: `6f0e8344-051a-42c6-bc3b-c3f1e042e6eb` (SUCCESS).
-Duas tentativas iniciais falharam durante o ajuste de porta/origem; permanecem
-no histórico, mas a instância ativa e o banco estão online.
 
 ## Variáveis
 
