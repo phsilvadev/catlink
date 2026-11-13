@@ -27,7 +27,7 @@ function storage() {
     client: new S3Client({
       endpoint,
       region: process.env.S3_REGION || "auto",
-      forcePathStyle: true,
+      forcePathStyle: process.env.S3_FORCE_PATH_STYLE !== "false",
       credentials: { accessKeyId, secretAccessKey },
     }),
   };
