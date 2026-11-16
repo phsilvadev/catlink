@@ -126,6 +126,31 @@ test("HTML integrado mantém a prévia sem reload, anima a volta e aplica PixelM
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    await expect(page.locator(".showcase-phone .profile-page")).toHaveAttribute(
+      "data-appearance",
+      "pixel",
+    );
+    const readPreview = (selector: string) =>
+      page.locator(selector).evaluate((el) => ({
+        appearance: el.getAttribute("data-appearance"),
+        name: el.querySelector("h1")?.textContent,
+        bio: el.querySelector(".profile-heading p")?.textContent,
+        avatar: el.querySelector(".profile-avatar img")?.getAttribute("src"),
+        links: Array.from(el.querySelectorAll(".profile-link")).map((a) => ({
+          label: a.textContent,
+          href: a.getAttribute("href"),
+          classes: a.className,
+          icon: a.querySelector("i")?.className,
+        })),
+        socials: Array.from(el.querySelectorAll(".profile-socials a")).map(
+          (a) => ({
+            label: a.getAttribute("aria-label"),
+            href: a.getAttribute("href"),
+          }),
+        ),
+        background: getComputedStyle(el).backgroundColor,
+      }));
+    const selectedMarkup = await readPreview(".showcase-phone .profile-page");
     await page.getByRole("button", { name: "Concluir configuração" }).click();
     await expect(page).toHaveURL(/\/app\/editor\//);
     const progress = (
@@ -137,6 +162,9 @@ test("HTML integrado mantém a prévia sem reload, anima a volta e aplica PixelM
       ).json()
     ).data;
     expect(saved.templateKey).toBe("pixel");
+    expect(await readPreview(".profile-page")).toEqual(selectedMarkup);
+    await page.reload();
+    expect(await readPreview(".profile-page")).toEqual(selectedMarkup);
     expect(saved.templateConfig.background).toBe("#ffffff");
     expect(saved.templateConfig.appearance).toBe("pixel");
     expect(saved.publishedVersionId).toBeNull();

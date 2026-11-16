@@ -89,8 +89,12 @@ test("painel de texto aplica estilo na prévia, salva, reabre e exclui no Postgr
     const saved = (
       await (await context.request.get(`/api/pages/${record.id}`)).json()
     ).data;
-    expect(saved.draft.blocks).toHaveLength(1);
-    expect(saved.draft.blocks[0].style).toMatchObject({
+    expect(
+      saved.draft.blocks.filter((b: { type: string }) => b.type === "text"),
+    ).toHaveLength(1);
+    expect(
+      saved.draft.blocks.find((b: { type: string }) => b.type === "text").style,
+    ).toMatchObject({
       bold: true,
       italic: true,
       underline: true,
@@ -116,7 +120,12 @@ test("painel de texto aplica estilo na prévia, salva, reabre e exclui no Postgr
     const deleted = (
       await (await context.request.get(`/api/pages/${record.id}`)).json()
     ).data;
-    expect(deleted.draft.blocks).toHaveLength(0);
+    expect(
+      deleted.draft.blocks.filter((b: { type: string }) => b.type === "text"),
+    ).toHaveLength(0);
+    expect(
+      deleted.draft.blocks.filter((b: { type: string }) => b.type !== "text"),
+    ).toEqual(record.draft.blocks);
     expect(deleted.publishedVersionId).toBeNull();
     // The server also validates styles; malformed CSS cannot bypass the UI.
     const invalid = await context.request.put(`/api/pages/${record.id}`, {

@@ -76,3 +76,19 @@ branches por tarefa. Branches antigas são referências históricas, sem trabalh
 A integração local e os arquivos CSS/JS de referência estão descritos em
 [desenvolvimento local](DESENVOLVIMENTO_LOCAL.md) e
 [referência completa](referencias/entrada-prototipo/README.md).
+
+## Conteúdo inicial do modelo (16/11/2026)
+
+O catálogo versão 3 contém `initialProfile` (incluindo foto local de exemplo) e
+`initialBlocks`. A prévia da seleção usa a configuração retornada pelo servidor;
+a conclusão copia esse mesmo conteúdo para o rascunho, gerando novos IDs para os
+blocos. O renderer é compartilhado com o editor. Foto e ícones fazem parte dos
+dados persistidos, sem depender de um modo de demonstração no renderer.
+Os links de exemplo continuam com destinos ilustrativos e a página fica privada.
+Perfis personalizados já salvos no fluxo antigo são preservados.
+
+A migração corrige apenas rascunhos de onboarding das versões antigas que ainda
+estão na revisão 1, sem blocos, foto, bio ou nome personalizado (exatamente
+“Meu Catlink”), sem publicação atual nem histórico de publicação. Incrementa a
+revisão para invalidar abas abertas. Páginas editadas, publicadas, criadas fora do
+onboarding e modelos de versões personalizadas não são substituídos.

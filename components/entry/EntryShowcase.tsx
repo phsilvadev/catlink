@@ -2,6 +2,8 @@
 
 import PageContent from "@/components/page/PageContent";
 import PhoneFrame from "@/components/page/PhoneFrame";
+import type { Draft } from "@/lib/schemas/page";
+import type { PageTheme } from "@/lib/page-appearance";
 import { demoProfile, entryTheme } from "@/lib/page-appearance";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
@@ -129,10 +131,15 @@ export default function EntryShowcase({
   expanded = false,
   selectedTheme,
   step = 1,
+  templates,
 }: {
   expanded?: boolean;
   selectedTheme?: string;
   step?: number;
+  templates?: {
+    key: string;
+    preview?: { draft: Draft; theme: PageTheme } | null;
+  }[];
 }) {
   const [demoTheme, setDemoTheme] = useState("basic");
   const [block, setBlock] = useState<BlockName | null>(null);
@@ -256,10 +263,15 @@ export default function EntryShowcase({
                 }
               >
                 <PageContent
-                  draft={demoProfile(theme)}
-                  theme={entryTheme(theme)}
+                  draft={
+                    templates?.find((t) => t.key === theme)?.preview?.draft ||
+                    demoProfile(theme)
+                  }
+                  theme={
+                    templates?.find((t) => t.key === theme)?.preview?.theme ||
+                    entryTheme(theme)
+                  }
                   preview
-                  demo
                 >
                   {activeBlock ? (
                     <DemoBlock block={activeBlock} key={activeBlock} />

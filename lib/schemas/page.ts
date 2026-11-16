@@ -64,6 +64,7 @@ export const blockSchema = z.discriminatedUnion("type", [
       ...base,
       type: z.literal("link"),
       label: z.string().min(1).max(120),
+      icon: z.enum(["globe", "youtube", "twitter"]).optional(),
       url: webUrl,
     })
     .strict(),
@@ -72,6 +73,7 @@ export const blockSchema = z.discriminatedUnion("type", [
       ...base,
       type: z.literal("button"),
       label: z.string().min(1).max(120),
+      icon: z.enum(["globe", "youtube", "twitter"]).optional(),
       url: webUrl,
     })
     .strict(),
@@ -103,6 +105,7 @@ export const draftSchema = z
         name: z.string().trim().min(1).max(80),
         bio: z.string().max(500),
         avatarAssetId: z.string().uuid().optional(),
+        avatarPreset: z.literal("agency").optional(),
       })
       .strict(),
     blocks: z
@@ -121,6 +124,7 @@ export const templateConfigSchema = z
     background: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     foreground: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     accent: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+    initialProfile: draftSchema.shape.profile.optional(),
     initialBlocks: z.array(blockSchema).max(100),
   })
   .strict();

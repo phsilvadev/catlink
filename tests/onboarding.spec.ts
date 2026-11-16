@@ -131,6 +131,32 @@ test("onboarding aprovado em quatro etapas salva progresso e cria um único rasc
     .data;
   expect(draft.publishedVersionId).toBe(null);
   expect(draft.templateKey).toBe("basic");
+  const catalog = (await (await context.request.get("/api/catalog")).json())
+    .data;
+  const model = catalog.templates.find(
+    (t: { key: string }) => t.key === "basic",
+  ).preview;
+  expect(draft.draft.profile).toEqual(model.draft.profile);
+  expect(
+    draft.draft.blocks.map((block: { id: string }) => ({
+      ...block,
+      id: undefined,
+    })),
+  ).toEqual(
+    model.draft.blocks.map((block: { id: string }) => ({
+      ...block,
+      id: undefined,
+    })),
+  );
+  await expect(page.locator(".profile-heading h1")).toHaveText("Rock Agency");
+  await expect(page.locator(".profile-avatar img")).toHaveAttribute(
+    "src",
+    /auth-avatar/,
+  );
+  await expect(page.locator(".profile-link")).toHaveCount(3);
+  await expect(page.locator(".profile-socials a")).toHaveCount(3);
+  await page.reload();
+  await expect(page.locator(".profile-heading h1")).toHaveText("Rock Agency");
   expect(state.state.platforms).toHaveLength(5);
   const repeated = await step(
     context.request,

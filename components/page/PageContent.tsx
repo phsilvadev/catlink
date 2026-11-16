@@ -9,14 +9,12 @@ export default function PageContent({
   draft,
   theme,
   preview = false,
-  demo = false,
   children,
   onSelectText,
 }: {
   draft: Draft;
   theme: PageTheme;
   preview?: boolean;
-  demo?: boolean;
   children?: ReactNode;
   onSelectText?: (id: string) => void;
 }) {
@@ -45,7 +43,7 @@ export default function PageContent({
         </div>
       )}
       <div className="profile-avatar">
-        {draft.profile.avatarAssetId || demo ? (
+        {draft.profile.avatarAssetId || draft.profile.avatarPreset ? (
           <Image
             unoptimized={!!draft.profile.avatarAssetId}
             src={
@@ -65,7 +63,7 @@ export default function PageContent({
       <div className="profile-heading">
         <h1>
           {draft.profile.name}
-          {demo && appearance === "pixel" && (
+          {draft.profile.avatarPreset && appearance === "pixel" && (
             <span
               className="material-icons-round profile-verified"
               aria-label="Verificado"
@@ -80,7 +78,7 @@ export default function PageContent({
         {children ||
           draft.blocks
             .filter((block) => block.visible)
-            .map((block, index) => {
+            .map((block) => {
               if (block.type === "text")
                 return (
                   <div
@@ -178,16 +176,14 @@ export default function PageContent({
                   key={block.id}
                   className={`profile-link ${block.type === "button" ? "profile-button" : ""} ${preview ? "pointer-events-none" : ""}`}
                 >
-                  {demo && (
+                  {block.icon && (
                     <i
                       className={
-                        appearance === "pixel"
-                          ? [
-                              "fab fa-youtube text-red-500",
-                              "fas fa-globe text-indigo-500",
-                              "fab fa-twitter text-blue-400",
-                            ][index]
-                          : "fas fa-globe"
+                        block.icon === "youtube"
+                          ? "fab fa-youtube text-red-500"
+                          : block.icon === "twitter"
+                            ? "fab fa-twitter text-blue-400"
+                            : "fas fa-globe"
                       }
                       aria-hidden="true"
                     />

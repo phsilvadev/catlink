@@ -23,7 +23,6 @@ export default function PhonePreview({
       <PageContent
         draft={page?.draft || demoProfile("basic")}
         theme={theme}
-        demo={!page}
         preview
         onSelectText={onSelectText}
       />

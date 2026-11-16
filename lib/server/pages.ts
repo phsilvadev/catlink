@@ -1,4 +1,5 @@
 import "server-only";
+import { templateStarter } from "@/lib/page-appearance";
 import { requireAvatar } from "./assets";
 import { getDb } from "./db";
 import { Prisma } from "@/generated/prisma/client";
@@ -46,7 +47,7 @@ export async function createPage(userId: string, input: unknown) {
     const template = await allowedTemplate(tx, plan.key, data.templateKey);
     const draft = draftSchema.parse({
       schemaVersion: 1,
-      profile: { name: data.name, bio: "" },
+      profile: { ...templateStarter(template.config).profile, name: data.name },
       blocks: template.config.initialBlocks,
     });
     return tx.page.create({

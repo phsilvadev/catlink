@@ -22,6 +22,10 @@ import {
 import UsernameField from "./UsernameField";
 import "@/components/entry/entry.css";
 type Template = {
+  preview?: {
+    draft: import("@/lib/schemas/page").Draft;
+    theme: import("@/lib/page-appearance").PageTheme;
+  } | null;
   key: string;
   name: string;
   description: string;
@@ -248,6 +252,7 @@ export default function OnboardingWizard({
       className={`entry-flow onboarding ${step === 4 ? "showcase-expanded model-step" : ""}`}
     >
       <EntryShowcase
+        templates={templates}
         expanded={step === 4}
         selectedTheme={state.templateKey}
         step={step}

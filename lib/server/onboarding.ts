@@ -15,6 +15,7 @@ import {
 } from "@/lib/schemas/onboarding";
 import { draftSchema, slugSchema } from "@/lib/schemas/page";
 import type { Prisma } from "@/generated/prisma/client";
+import { templateStarter } from "@/lib/page-appearance";
 import { requireAvatar } from "./assets";
 
 async function stateFor(tx: Prisma.TransactionClient, userId: string) {
@@ -126,7 +127,11 @@ export async function updateOnboarding(userId: string, input: unknown) {
       );
       const draft = draftSchema.parse({
         schemaVersion: 1,
-        profile: state.profile,
+        profile:
+          JSON.stringify(state.profile) ===
+          JSON.stringify(initialOnboarding.profile)
+            ? templateStarter(template.config).profile
+            : state.profile,
         blocks,
       });
       const page = await tx.page.create({

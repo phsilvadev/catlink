@@ -1,3 +1,6 @@
+import catalog from "@/prisma/catalog.json";
+import { z } from "zod";
+import { draftSchema, templateConfigSchema } from "./schemas/page";
 import type { Draft } from "./schemas/page";
 
 export type PageAppearance = "aurora" | "sunset" | "mint" | "pixel";
@@ -36,54 +39,17 @@ export function entryTheme(key: string): PageTheme {
     accent: "#111827",
   };
 }
-export function demoProfile(key: string): Draft {
-  const pixel = key === "pixel";
-  return {
+export function templateStarter(
+  config: z.infer<typeof templateConfigSchema>,
+): Draft {
+  return draftSchema.parse({
     schemaVersion: 1,
-    profile: {
-      name: pixel ? "PixelMaster" : "Rock Agency",
-      bio: pixel
-        ? "Design | Code | Minimalist"
-        : "Digital agency specializing in SaaS products.",
-    },
-    blocks: [
-      {
-        id: "00000000-0000-4000-8000-000000000001",
-        type: pixel ? "link" : "button",
-        visible: true,
-        label: pixel ? "Latest Video" : "Visit Website",
-        url: "https://example.com",
-      },
-      {
-        id: "00000000-0000-4000-8000-000000000002",
-        type: "link",
-        visible: true,
-        label: pixel ? "My Portfolio" : "Latest Projects",
-        url: "https://example.com",
-      },
-      {
-        id: "00000000-0000-4000-8000-000000000003",
-        type: "link",
-        visible: true,
-        label: pixel ? "Twitter Threads" : "Book a Call",
-        url: "https://example.com",
-      },
-      {
-        id: "00000000-0000-4000-8000-000000000004",
-        type: "social",
-        visible: true,
-        items: pixel
-          ? [
-              { label: "Instagram", url: "https://instagram.com" },
-              { label: "TikTok", url: "https://tiktok.com" },
-              { label: "E-mail", url: "https://example.com" },
-            ]
-          : [
-              { label: "Instagram", url: "https://instagram.com" },
-              { label: "X", url: "https://x.com" },
-              { label: "LinkedIn", url: "https://linkedin.com" },
-            ],
-      },
-    ],
-  };
+    profile: config.initialProfile || { name: "Meu Catlink", bio: "" },
+    blocks: config.initialBlocks,
+  });
+}
+export function demoProfile(key: string): Draft {
+  const template =
+    catalog.templates.find((t) => t.key === key) || catalog.templates[0];
+  return templateStarter(templateConfigSchema.parse(template.config));
 }

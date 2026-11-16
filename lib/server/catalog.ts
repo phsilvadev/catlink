@@ -1,4 +1,5 @@
 import "server-only";
+import { templateStarter } from "@/lib/page-appearance";
 import { getDb } from "./db";
 import type { Prisma } from "@/generated/prisma/client";
 import { templateConfigSchema } from "@/lib/schemas/page";
@@ -99,6 +100,9 @@ export async function listCatalog(userId: string) {
           name: template.name,
           description: template.description,
           thumbnail: template.thumbnail,
+          preview: config.success
+            ? { draft: templateStarter(config.data), theme: config.data }
+            : null,
           version: template.version,
           allowed:
             template.plans.length > 0 &&
